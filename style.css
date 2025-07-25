@@ -1,0 +1,57 @@
+/* Make buttons bigger */
+button {
+  font-size: 3rem; /* bigger text */
+  padding: 1.5rem 2.5rem; /* bigger click/touch area */
+  border-radius: 1rem; /* maintain rounded style */
+  min-width: 80px; /* minimum width for tap targets */
+}
+
+/* Ensure no scrolling and full viewport fit */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden; /* disables scrollbars */
+  user-select: none;
+}
+
+/* Main app container to fill viewport */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+}
+
+/* Layout sides flexible */
+.side {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+/* Responsive: on mobile, stack vertically with spacing */
+@media (max-width: 600px) {
+  #app.horizontal {
+    flex-direction: column;
+  }
+  #app.vertical {
+    flex-direction: column;
+  }
+
+  button {
+    font-size: 2.5rem;
+    padding: 1.2rem 2rem;
+    min-width: 100%; /* full width buttons */
+    margin: 0.3rem 0;
+  }
+  
+  .side {
+    flex: none;
+    height: 50vh; /* half viewport height each */
+  }
+}
