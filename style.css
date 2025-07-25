@@ -1,0 +1,466 @@
+/* QR Code popup styles */
+  #qr-popup {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    display: none;
+    z-index: 10000;
+  }
+  #qr-popup button {
+    margin-top: 1rem;
+    padding: 0.3rem 1rem;
+    cursor: pointer;
+  }
+
+
+
+    /* Global */
+    body, html {
+      margin: 0; padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #121212;
+      color: #eee;
+      user-select: none;
+      overflow-x: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    #app {
+      flex: 1;
+      display: flex;
+      gap: 1rem;
+      padding: 1rem;
+      transition: all 0.5s ease;
+      border-radius: 1rem;
+    }
+    #app.horizontal {
+      flex-direction: row;
+    }
+    #app.vertical {
+      flex-direction: column;
+    }
+
+    /* Team side */
+    .team-side {
+      flex: 1;
+      background: #1f2937;
+      border-radius: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 2rem 3rem 2rem;
+      position: relative;
+      box-shadow: 0 0 20px #0ea5e9aa inset;
+      transition: background-color 0.3s ease;
+      user-select: none;
+      min-width: 0;
+    }
+    .team-name {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #eee;
+      border: none;
+      background: transparent;
+      margin-bottom: 0.5rem;
+      max-width: 14ch;
+      outline: none;
+      cursor: text;
+      user-select: text;
+      font-family: 'Poppins', sans-serif;
+      border-radius: 0.75rem;
+      padding: 0.1rem 0.3rem;
+      transition: background-color 0.3s ease;
+    }
+    .team-name:focus {
+      background-color: #334155;
+      box-shadow: 0 0 8px #0ea5e9aa;
+      outline: none;
+    }
+    .score-container {
+      flex: 1;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      overflow: visible;
+      position: relative;
+    }
+    .score {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      color: #0ea5e9;
+      text-shadow:
+        0 0 12px #0ea5e9cc,
+        0 0 24px #0ea5e9aa;
+      user-select: none;
+      line-height: 1;
+      margin: 0;
+      flex-shrink: 0;
+    }
+    .controls-row {
+      margin-top: 1.2rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button, select {
+      background: #0ea5e9;
+      border: none;
+      border-radius: 1.25rem;
+      padding: 0.75rem 1.8rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #111;
+      box-shadow: 0 8px 20px rgb(14 165 233 / 0.5);
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+      font-family: 'Poppins', sans-serif;
+      min-width: 72px;
+      text-align: center;
+    }
+    button:hover, button:focus, select:hover, select:focus {
+      background: #0284c7;
+      outline: none;
+    }
+    button:active, select:active {
+      transform: scale(0.95);
+    }
+    select {
+      appearance: none;
+      cursor: pointer;
+      color: #111;
+      padding-right: 2.5rem;
+      position: relative;
+      background-image:
+        url('data:image/svg+xml;utf8,<svg fill="black" height="12" viewBox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 12px 12px;
+    }
+
+    /* Color Picker Button */
+    .color-btn {
+      position: absolute;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      background: rgba(255 255 255 / 0.15);
+      border-radius: 50%;
+      width: 52px;
+      height: 52px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(255 255 255 / 0.2);
+      transition: background-color 0.3s ease;
+      user-select: none;
+      font-size: 1.9rem;
+      color: #0ea5e9;
+      line-height: 1;
+      border: 2px solid transparent;
+    }
+    .color-btn:hover {
+      background: rgba(255 255 255 / 0.35);
+      border-color: #0ea5e9;
+    }
+
+    /* Color Picker Panel */
+    .picker-panel {
+      position: absolute;
+      bottom: 70px;
+      right: 10px;
+      width: 280px;
+      background: rgba(20 20 20 / 0.9);
+      backdrop-filter: blur(18px);
+      border-radius: 1rem;
+      padding: 1rem 1.5rem 1.5rem 1.5rem;
+      box-shadow: 0 0 30px #0ea5e9cc;
+      user-select: none;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.85);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 99;
+    }
+    .picker-panel.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    /* Hue Slider */
+    .hue-slider {
+      position: relative;
+      width: 100%;
+      height: 18px;
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(to right,
+        #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
+      cursor: pointer;
+    }
+    .hue-thumb {
+      position: absolute;
+      top: 50%;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 3px solid white;
+      background: black;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 8px rgba(255,255,255,0.9);
+      cursor: pointer;
+      user-select: none;
+      touch-action: none;
+    }
+
+    /* Saturation-Lightness square */
+    .sl-picker {
+      position: relative;
+      width: 100%;
+      height: 160px;
+      border-radius: 1rem;
+      cursor: crosshair;
+      background: red;
+      margin-bottom: 1rem;
+      user-select: none;
+    }
+    .sl-white-gradient {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to right, #fff, rgba(255,255,255,0));
+      border-radius: 1rem;
+      pointer-events: none;
+    }
+    .sl-black-gradient {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to top, #000, rgba(0,0,0,0));
+      border-radius: 1rem;
+      pointer-events: none;
+    }
+    .sl-cursor {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 0 12px #0ea5e9;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    /* Hex input */
+    .hex-input {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      border-radius: 0.75rem;
+      border: none;
+      background: rgba(255 255 255 / 0.15);
+      color: white;
+      outline: none;
+      user-select: text;
+      letter-spacing: 0.05em;
+      font-family: monospace;
+    }
+    .hex-input::selection {
+      background: #0ea5e9aa;
+    }
+
+    /* Picker Close Button */
+    .picker-close {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.75rem;
+      font-size: 1.6rem;
+      font-weight: 900;
+      cursor: pointer;
+      color: white;
+      user-select: none;
+      line-height: 1;
+      transition: color 0.3s ease;
+    }
+    .picker-close:hover {
+      color: #0ea5e9;
+    }
+
+    /* Controls Bar */
+    #controls {
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      border-radius: 1.5rem;
+      margin: 0 1rem 1rem 1rem;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.7);
+      user-select: none;
+      font-family: 'Poppins', sans-serif;
+    }
+    #controls .btn-group {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    #controls button {
+      background: #0ea5e9;
+      box-shadow: 0 8px 24px rgb(14 165 233 / 0.7);
+      padding: 0.75rem 1.75rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-radius: 1.5rem;
+      cursor: pointer;
+      user-select: none;
+      min-width: 96px;
+      transition: background-color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    #controls button:hover, #controls button:focus {
+      background: #0284c7;
+      outline: none;
+    }
+    #controls button:active {
+      transform: scale(0.95);
+    }
+
+    /* Timer Button and Expanded Controls */
+    #timerWrapper {
+      position: relative;
+      display: inline-block;
+    }
+    #timerToggleBtn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #0ea5e9;
+      border: none;
+      color: #111;
+      font-size: 1.6rem;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgb(14 165 233 / 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    #timerToggleBtn:hover, #timerToggleBtn:focus {
+      background: #0284c7;
+      outline: none;
+    }
+    #timerControls {
+      position: absolute;
+      bottom: 60px;
+      right: 0;
+      display: flex;
+      gap: 0.6rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      user-select: none;
+      z-index: 100;
+    }
+    #timerControls.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .timer-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #0ea5e9;
+      border: none;
+      color: #111;
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgb(14 165 233 / 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.3s ease;
+      position: relative;
+    }
+    .timer-btn:hover, .timer-btn:focus {
+      background: #0284c7;
+      outline: none;
+    }
+    .timer-btn:active {
+      transform: scale(0.9);
+    }
+    /* Tooltip for desktop */
+    @media (hover: hover) {
+      .timer-btn[data-tooltip]:hover::after,
+      .timer-btn[data-tooltip]:focus::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 110%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #0ea5e9;
+        color: #111;
+        padding: 0.3rem 0.6rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(14,165,233,0.8);
+        user-select: none;
+        pointer-events: none;
+        z-index: 101;
+      }
+    }
+
+    /* QR Code container */
+    #qrContainer {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(20 20 20 / 0.9);
+      padding: 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 25px #0ea5e9cc;
+      user-select: none;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      z-index: 1000;
+    }
+    #qrContainer.open {
+      display: flex;
+      animation: fadeIn 0.3s ease forwards;
+    }
+    #qrContainer > canvas {
+      border-radius: 0.8rem;
+      box-shadow: 0 0 12px #0ea5e9cc;
+    }
+    #qrCloseBtn {
+      background: transparent;
+      border: none;
+      color: #0ea5e9;
+      font-size: 1.5rem;
+      cursor: pointer;
+      user-select: none;
+      align-self: flex-end;
+      padding: 0;
+    }
+    #qrCloseBtn:hover {
+      color: #0284c7;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(-10px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
