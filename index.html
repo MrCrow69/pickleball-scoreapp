@@ -3,15 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pickleball Scorer - Modern Sleek</title>
+  <title>Pickleball Scorer - Modern</title>
+
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Poppins & JetBrains Mono -->
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Poppins:wght@600;900&display=swap" rel="stylesheet">
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;900&display=swap');
-    /* Global styles */
+    /* Global */
     body, html {
       margin: 0; padding: 0;
-      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-        Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-family: 'Poppins', sans-serif;
       background: #121212;
       color: #eee;
       user-select: none;
@@ -19,181 +23,165 @@
       height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
     }
     #app {
-      flex-grow: 1;
+      flex: 1;
       display: flex;
-      flex-direction: column;
-      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      gap: 1rem;
+      padding: 1rem;
+      transition: all 0.5s ease;
       border-radius: 1rem;
-      overflow: hidden;
-      margin: 1rem;
-      box-shadow:
-        0 8px 24px rgb(0 0 0 / 0.7),
-        inset 0 0 0 1px rgb(255 255 255 / 0.05);
-      user-select: none;
     }
     #app.horizontal {
       flex-direction: row;
     }
+    #app.vertical {
+      flex-direction: column;
+    }
+
+    /* Team side */
     .team-side {
       flex: 1;
+      background: #1f2937;
+      border-radius: 1.5rem;
       display: flex;
       flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      padding: 2rem 2rem 3rem 2rem;
       position: relative;
-      transition: all 0.4s ease;
-      border-radius: 1rem;
-      margin: 0.5rem;
-      box-shadow:
-        inset 0 0 40px 4px rgb(255 255 255 / 0.12);
+      box-shadow: 0 0 20px #0ea5e9aa inset;
+      transition: background-color 0.3s ease;
       user-select: none;
-      padding: 2rem;
-      min-width: 220px;
-      min-height: 280px;
+      min-width: 0;
     }
     .team-name {
-      font-size: 3.5rem;
+      font-size: 2.5rem;
       font-weight: 900;
-      letter-spacing: 0.04em;
-      margin-bottom: 0.75rem;
-      background: transparent;
-      border-radius: 0.75rem;
       color: #eee;
-      user-select: text;
-      max-width: 12ch;
-      text-align: center;
-      outline: none;
       border: none;
+      background: transparent;
+      margin-bottom: 0.5rem;
+      max-width: 14ch;
+      outline: none;
       cursor: text;
+      user-select: text;
       font-family: 'Poppins', sans-serif;
+      border-radius: 0.75rem;
+      padding: 0.1rem 0.3rem;
+      transition: background-color 0.3s ease;
     }
     .team-name:focus {
-      background: #222;
-      box-shadow: 0 0 12px #0ea5e9cc;
+      background-color: #334155;
+      box-shadow: 0 0 8px #0ea5e9aa;
       outline: none;
     }
+    .score-container {
+      flex: 1;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      overflow: visible;
+      position: relative;
+    }
     .score {
-      font-size: 8rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9rem;
       font-weight: 900;
       letter-spacing: 0.05em;
-      user-select: none;
-      margin-bottom: 2.5rem;
+      color: #0ea5e9;
       text-shadow:
-        0 0 12px rgba(14, 165, 233, 0.75),
-        0 0 16px rgba(14, 165, 233, 0.55);
-    }
-    .btn-group {
-      display: flex;
-      gap: 1.25rem;
+        0 0 12px #0ea5e9cc,
+        0 0 24px #0ea5e9aa;
       user-select: none;
-      transition: opacity 0.3s ease;
+      line-height: 1;
+      margin: 0;
+      flex-shrink: 0;
     }
-    button.score-btn {
+    .controls-row {
+      margin-top: 1.2rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button, select {
       background: #0ea5e9;
       border: none;
-      padding: 1rem 2.75rem;
+      border-radius: 1.25rem;
+      padding: 0.75rem 1.8rem;
       font-weight: 700;
-      font-size: 1.6rem;
+      font-size: 1.25rem;
       color: #111;
-      border-radius: 1.5rem;
-      box-shadow:
-        0 10px 24px rgb(14 165 233 / 0.55);
-      transition: background-color 0.25s ease, transform 0.1s ease;
+      box-shadow: 0 8px 20px rgb(14 165 233 / 0.5);
       cursor: pointer;
+      transition: background-color 0.3s ease;
       user-select: none;
       font-family: 'Poppins', sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 60px;
+      min-width: 72px;
+      text-align: center;
     }
-    button.score-btn:hover, button.score-btn:focus {
+    button:hover, button:focus, select:hover, select:focus {
       background: #0284c7;
       outline: none;
     }
-    button.score-btn:active {
-      transform: scale(0.92);
-    }
-    /* Serve buttons inside teams */
-    .serve-btn {
-      position: absolute;
-      bottom: 1.5rem;
-      left: 1.5rem;
-      background: #10b981;
-      border-radius: 1rem;
-      border: none;
-      padding: 0.5rem 1rem;
-      font-weight: 700;
-      font-size: 1rem;
-      color: #111;
-      box-shadow: 0 6px 15px rgb(16 185 129 / 0.6);
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.25s ease, transform 0.1s ease;
-      font-family: 'Poppins', sans-serif;
-      user-select: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .serve-btn:hover, .serve-btn:focus {
-      background: #059669;
-      outline: none;
-    }
-    .serve-btn:active {
+    button:active, select:active {
       transform: scale(0.95);
     }
+    select {
+      appearance: none;
+      cursor: pointer;
+      color: #111;
+      padding-right: 2.5rem;
+      position: relative;
+      background-image:
+        url('data:image/svg+xml;utf8,<svg fill="black" height="12" viewBox="0 0 24 24" width="12" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 12px 12px;
+    }
 
-    /* Color picker button */
+    /* Color Picker Button */
     .color-btn {
       position: absolute;
-      bottom: 1.5rem;
-      right: 1.5rem;
+      bottom: 1.25rem;
+      right: 1.25rem;
       background: rgba(255 255 255 / 0.15);
       border-radius: 50%;
-      width: 48px;
-      height: 48px;
+      width: 52px;
+      height: 52px;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
+      box-shadow: 0 0 12px rgba(255 255 255 / 0.2);
       transition: background-color 0.3s ease;
-      box-shadow:
-        0 0 14px rgba(255 255 255 / 0.15);
       user-select: none;
-      font-size: 1.8rem;
+      font-size: 1.9rem;
+      color: #0ea5e9;
       line-height: 1;
+      border: 2px solid transparent;
     }
     .color-btn:hover {
       background: rgba(255 255 255 / 0.35);
+      border-color: #0ea5e9;
     }
 
-    /* Custom color picker panel */
+    /* Color Picker Panel */
     .picker-panel {
       position: absolute;
       bottom: 70px;
       right: 10px;
       width: 280px;
-      background: rgba(255 255 255 / 0.12);
-      backdrop-filter: blur(20px);
+      background: rgba(20 20 20 / 0.9);
+      backdrop-filter: blur(18px);
       border-radius: 1rem;
-      padding: 1.2rem 1.8rem 1.8rem 1.8rem;
-      box-shadow:
-        0 0 40px rgba(14, 165, 233, 0.5);
+      padding: 1rem 1.5rem 1.5rem 1.5rem;
+      box-shadow: 0 0 30px #0ea5e9cc;
       user-select: none;
-      z-index: 30;
       opacity: 0;
       pointer-events: none;
       transform: scale(0.85);
-      transition:
-        opacity 0.3s ease,
-        transform 0.3s ease;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 99;
     }
     .picker-panel.open {
       opacity: 1;
@@ -201,12 +189,13 @@
       transform: scale(1);
     }
 
-    /* Hue slider */
+    /* Hue Slider */
     .hue-slider {
       position: relative;
       width: 100%;
-      height: 20px;
-      border-radius: 0.85rem;
+      height: 18px;
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
       background: linear-gradient(to right,
         #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
       cursor: pointer;
@@ -214,8 +203,8 @@
     .hue-thumb {
       position: absolute;
       top: 50%;
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       border: 3px solid white;
       background: black;
@@ -224,23 +213,18 @@
       cursor: pointer;
       user-select: none;
       touch-action: none;
-      transition: box-shadow 0.2s ease;
-    }
-    .hue-thumb:hover {
-      box-shadow: 0 0 14px #0ea5e9ee;
     }
 
-    /* Saturation-Lightness picker */
+    /* Saturation-Lightness square */
     .sl-picker {
       position: relative;
       width: 100%;
       height: 160px;
       border-radius: 1rem;
       cursor: crosshair;
-      user-select: none;
       background: red;
-      box-shadow:
-        inset 0 0 25px rgba(0,0,0,0.25);
+      margin-bottom: 1rem;
+      user-select: none;
     }
     .sl-white-gradient {
       position: absolute;
@@ -258,621 +242,781 @@
     }
     .sl-cursor {
       position: absolute;
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
       border-radius: 50%;
       border: 3px solid white;
-      box-shadow: 0 0 14px #0ea5e9;
+      box-shadow: 0 0 12px #0ea5e9;
       transform: translate(-50%, -50%);
       pointer-events: none;
-      transition: box-shadow 0.3s ease;
     }
 
     /* Hex input */
     .hex-input {
       width: 100%;
-      padding: 0.55rem 1.1rem;
-      font-size: 1.35rem;
-      font-weight: 700;
-      border-radius: 0.85rem;
+      padding: 0.5rem 1rem;
+      font-size: 1.25rem;
+      font-weight: 600;
+      border-radius: 0.75rem;
       border: none;
       background: rgba(255 255 255 / 0.15);
       color: white;
       outline: none;
       user-select: text;
-      letter-spacing: 0.07em;
-      font-family: 'Poppins', sans-serif;
-      transition: background-color 0.25s ease;
-    }
-    .hex-input:focus {
-      background: rgba(14, 165, 233, 0.3);
-      outline: none;
+      letter-spacing: 0.05em;
+      font-family: monospace;
     }
     .hex-input::selection {
       background: #0ea5e9aa;
     }
 
-    /* Close button for picker */
+    /* Picker Close Button */
     .picker-close {
       position: absolute;
-      top: 0.4rem;
+      top: 0.5rem;
       right: 0.75rem;
-      font-size: 1.9rem;
+      font-size: 1.6rem;
       font-weight: 900;
       cursor: pointer;
       color: white;
       user-select: none;
-      transition: color 0.2s ease;
       line-height: 1;
+      transition: color 0.3s ease;
     }
     .picker-close:hover {
-      color: #0ea5e9cc;
+      color: #0ea5e9;
     }
 
-    /* Controls bar */
+    /* Controls Bar */
     #controls {
-      background: #1e1e1e;
       padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-radius: 1rem;
+      background: #1e293b;
+      border-radius: 1.5rem;
       margin: 0 1rem 1rem 1rem;
-      box-shadow: 0 5px 35px rgba(0,0,0,0.6);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.7);
       user-select: none;
       font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      color: #bbb;
+    }
+    #controls .btn-group {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
     }
     #controls button {
       background: #0ea5e9;
-      box-shadow: 0 10px 30px rgb(14 165 233 / 0.75);
-      padding: 0.75rem 2rem;
+      box-shadow: 0 8px 24px rgb(14 165 233 / 0.7);
+      padding: 0.75rem 1.75rem;
       font-size: 1.25rem;
       font-weight: 700;
       border-radius: 1.5rem;
       cursor: pointer;
       user-select: none;
-      color: #111;
-      transition: background-color 0.3s ease, transform 0.1s ease;
-      font-family: 'Poppins', sans-serif;
+      min-width: 96px;
+      transition: background-color 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
     }
     #controls button:hover, #controls button:focus {
       background: #0284c7;
       outline: none;
     }
     #controls button:active {
-      transform: scale(0.94);
+      transform: scale(0.95);
     }
 
-    /* Hide buttons when fullscreen */
-    .fullscreen .btn-group {
+    /* Timer Button and Expanded Controls */
+    #timerWrapper {
+      position: relative;
+      display: inline-block;
+    }
+    #timerToggleBtn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #0ea5e9;
+      border: none;
+      color: #111;
+      font-size: 1.6rem;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgb(14 165 233 / 0.6);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    #timerToggleBtn:hover, #timerToggleBtn:focus {
+      background: #0284c7;
+      outline: none;
+    }
+    #timerControls {
+      position: absolute;
+      bottom: 60px;
+      right: 0;
+      display: flex;
+      gap: 0.6rem;
       opacity: 0;
       pointer-events: none;
-      height: 0;
-      overflow: hidden;
-      margin: 0;
-      padding: 0;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.3s ease;
+      user-select: none;
+      z-index: 100;
     }
-    /* Responsive: smaller font on very narrow */
-    @media (max-width: 450px) {
-      .team-name {
-        font-size: 2.5rem;
+    #timerControls.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .timer-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #0ea5e9;
+      border: none;
+      color: #111;
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgb(14 165 233 / 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.3s ease;
+      position: relative;
+    }
+    .timer-btn:hover, .timer-btn:focus {
+      background: #0284c7;
+      outline: none;
+    }
+    .timer-btn:active {
+      transform: scale(0.9);
+    }
+    /* Tooltip for desktop */
+    @media (hover: hover) {
+      .timer-btn[data-tooltip]:hover::after,
+      .timer-btn[data-tooltip]:focus::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: 110%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #0ea5e9;
+        color: #111;
+        padding: 0.3rem 0.6rem;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        box-shadow: 0 2px 8px rgba(14,165,233,0.8);
+        user-select: none;
+        pointer-events: none;
+        z-index: 101;
       }
-      .score {
-        font-size: 6rem;
-      }
-      button.score-btn {
-        font-size: 1.25rem;
-        padding: 0.9rem 2rem;
-        min-width: 50px;
-      }
-      .serve-btn {
-        font-size: 0.85rem;
-        padding: 0.4rem 0.9rem;
-      }
+    }
+
+    /* QR Code container */
+    #qrContainer {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(20 20 20 / 0.9);
+      padding: 1rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 25px #0ea5e9cc;
+      user-select: none;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      z-index: 1000;
+    }
+    #qrContainer.open {
+      display: flex;
+      animation: fadeIn 0.3s ease forwards;
+    }
+    #qrContainer > canvas {
+      border-radius: 0.8rem;
+      box-shadow: 0 0 12px #0ea5e9cc;
+    }
+    #qrCloseBtn {
+      background: transparent;
+      border: none;
+      color: #0ea5e9;
+      font-size: 1.5rem;
+      cursor: pointer;
+      user-select: none;
+      align-self: flex-end;
+      padding: 0;
+    }
+    #qrCloseBtn:hover {
+      color: #0284c7;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(-10px);}
+      to {opacity: 1; transform: translateY(0);}
     }
   </style>
 </head>
 <body>
-  <div id="app" class="vertical" aria-label="Pickleball Scoring App">
+  <div id="app" class="horizontal" aria-label="Pickleball Scoring App">
     <!-- Team A Side -->
     <section id="sideA" class="team-side" tabindex="0" aria-label="Team A scoring side" style="background-color:#0f172a;">
-      <input type="text" aria-label="Team A Name" id="teamAName" class="team-name" maxlength="12" value="Team A" />
-      <div id="scoreA" class="score" aria-live="polite" aria-atomic="true">0</div>
-      <div class="btn-group" role="group" aria-label="Team A score controls">
-        <button id="btnAPlus" class="score-btn" aria-label="Increase Team A score">+</button>
-        <button id="btnAMinus" class="score-btn" aria-label="Decrease Team A score">−</button>
+      <input type="text" aria-label="Team A Name" id="teamAName" class="team-name" maxlength="14" value="Team A" />
+      <div class="score-container">
+        <div id="scoreA" class="score" aria-live="polite" aria-atomic="true">0</div>
       </div>
-      <button aria-label="Serve for Team A" class="serve-btn" id="serveBtnA" title="Serve Team A">Serve 1</button>
-      <button aria-label="Serve for Team A" class="serve-btn" id="serveBtnA2" title="Serve Team A 2" style="bottom: 1.5rem; left: 85px;">Serve 2</button>
+      <div class="controls-row" aria-label="Team A controls">
+        <button id="btnAPlus" aria-label="Increase Team A score">+1</button>
+        <button id="btnAMinus" aria-label="Decrease Team A score">−1</button>
+        <select id="serverA" aria-label="Select Team A server">
+          <option value="">Serve</option>
+          <option value="1">Server 1</option>
+          <option value="2">Server 2</option>
+        </select>
+      </div>
       <button aria-label="Open Team A color picker" class="color-btn" id="colorBtnA" title="Change Team A background color">🎨</button>
-      <div class="picker-panel" id="pickerA" aria-hidden="true" role="dialog" aria-modal="true" tabindex="-1">
-        <div class="picker-close" role="button" tabindex="0" aria-label="Close Team A color picker">&times;</div>
-        <div class="hue-slider" id="hueSliderA" tabindex="0" aria-label="Hue selector"></div>
-        <div class="sl-picker" id="slPickerA" tabindex="0" aria-label="Saturation and lightness selector">
+      <div class="picker-panel" id="pickerA" role="dialog" aria-modal="true" aria-label="Team A color picker">
+        <div class="picker-close" id="pickerCloseA" tabindex="0" role="button" aria-label="Close Team A color picker">&times;</div>
+        <div class="hue-slider" id="hueA" tabindex="0" aria-label="Hue slider"></div>
+        <div class="sl-picker" id="slA" tabindex="0" aria-label="Saturation and lightness picker">
           <div class="sl-white-gradient"></div>
           <div class="sl-black-gradient"></div>
           <div class="sl-cursor" id="slCursorA"></div>
         </div>
-        <input type="text" id="hexInputA" class="hex-input" aria-label="Hex color input for Team A" maxlength="7" value="#0f172a" />
+        <input type="text" id="hexInputA" aria-label="Hex color input Team A" class="hex-input" maxlength="7" value="#0f172a" />
       </div>
     </section>
 
     <!-- Team B Side -->
-    <section id="sideB" class="team-side" tabindex="0" aria-label="Team B scoring side" style="background-color:#581c87;">
-      <input type="text" aria-label="Team B Name" id="teamBName" class="team-name" maxlength="12" value="Team B" />
-      <div id="scoreB" class="score" aria-live="polite" aria-atomic="true">0</div>
-      <div class="btn-group" role="group" aria-label="Team B score controls">
-        <button id="btnBPlus" class="score-btn" aria-label="Increase Team B score">+</button>
-        <button id="btnBMinus" class="score-btn" aria-label="Decrease Team B score">−</button>
+    <section id="sideB" class="team-side" tabindex="0" aria-label="Team B scoring side" style="background-color:#1e293b;">
+      <input type="text" aria-label="Team B Name" id="teamBName" class="team-name" maxlength="14" value="Team B" />
+      <div class="score-container">
+        <div id="scoreB" class="score" aria-live="polite" aria-atomic="true">0</div>
       </div>
-      <button aria-label="Serve for Team B" class="serve-btn" id="serveBtnB" title="Serve Team B">Serve 1</button>
-      <button aria-label="Serve for Team B" class="serve-btn" id="serveBtnB2" title="Serve Team B 2" style="bottom: 1.5rem; left: 85px;">Serve 2</button>
+      <div class="controls-row" aria-label="Team B controls">
+        <button id="btnBPlus" aria-label="Increase Team B score">+1</button>
+        <button id="btnBMinus" aria-label="Decrease Team B score">−1</button>
+        <select id="serverB" aria-label="Select Team B server">
+          <option value="">Serve</option>
+          <option value="1">Server 1</option>
+          <option value="2">Server 2</option>
+        </select>
+      </div>
       <button aria-label="Open Team B color picker" class="color-btn" id="colorBtnB" title="Change Team B background color">🎨</button>
-      <div class="picker-panel" id="pickerB" aria-hidden="true" role="dialog" aria-modal="true" tabindex="-1">
-        <div class="picker-close" role="button" tabindex="0" aria-label="Close Team B color picker">&times;</div>
-        <div class="hue-slider" id="hueSliderB" tabindex="0" aria-label="Hue selector"></div>
-        <div class="sl-picker" id="slPickerB" tabindex="0" aria-label="Saturation and lightness selector">
+      <div class="picker-panel" id="pickerB" role="dialog" aria-modal="true" aria-label="Team B color picker">
+        <div class="picker-close" id="pickerCloseB" tabindex="0" role="button" aria-label="Close Team B color picker">&times;</div>
+        <div class="hue-slider" id="hueB" tabindex="0" aria-label="Hue slider"></div>
+        <div class="sl-picker" id="slB" tabindex="0" aria-label="Saturation and lightness picker">
           <div class="sl-white-gradient"></div>
           <div class="sl-black-gradient"></div>
           <div class="sl-cursor" id="slCursorB"></div>
         </div>
-        <input type="text" id="hexInputB" class="hex-input" aria-label="Hex color input for Team B" maxlength="7" value="#581c87" />
+        <input type="text" id="hexInputB" aria-label="Hex color input Team B" class="hex-input" maxlength="7" value="#1e293b" />
       </div>
     </section>
   </div>
 
-  <div id="controls" role="region" aria-label="Scoring controls">
-    <div>
-      <button id="undoBtn" aria-label="Undo last score change">Undo</button>
-      <button id="resetBtn" aria-label="Reset scores">Reset</button>
-      <button id="switchServeBtn" aria-label="Switch serve">Switch Serve</button>
+  <!-- Controls Bar -->
+  <div id="controls" role="region" aria-label="App Controls">
+    <div class="btn-group">
+      <button id="btnLayout" aria-pressed="false" aria-label="Toggle layout between horizontal and vertical">
+        <span id="layoutIcon" aria-hidden="true">↔️</span> Layout
+      </button>
+      <button id="btnReset" aria-label="Reset scores and settings">Reset</button>
+      <button id="btnQR" aria-label="Generate QR Code of current score">QR Code</button>
     </div>
-    <div>
-      <button id="toggleLayoutBtn" aria-label="Toggle layout orientation">Toggle Layout</button>
+    <div class="btn-group" id="timerWrapper">
+      <button id="timerToggleBtn" aria-expanded="false" aria-label="Timer controls">⏰</button>
+      <div id="timerControls" role="group" aria-label="Timer control buttons" aria-hidden="true">
+        <button class="timer-btn" id="timerStart" data-tooltip="Start timer" aria-label="Start timer">▶️</button>
+        <button class="timer-btn" id="timerPause" data-tooltip="Pause timer" aria-label="Pause timer">⏸️</button>
+        <button class="timer-btn" id="timerReset" data-tooltip="Reset timer" aria-label="Reset timer">⟲</button>
+      </div>
     </div>
   </div>
 
-<script>
-  (() => {
-    // Utility: Clamp number between min/max
-    const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+  <!-- QR Code Container -->
+  <div id="qrContainer" role="dialog" aria-modal="true" aria-label="Score QR Code">
+    <button id="qrCloseBtn" aria-label="Close QR Code popup">&times;</button>
+    <canvas id="qrCanvas" width="200" height="200" aria-hidden="true"></canvas>
+  </div>
 
-    // Convert HSL to HEX
-    function hslToHex(h, s, l) {
-      s /= 100; l /= 100;
-      const c = (1 - Math.abs(2 * l - 1)) * s;
-      const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-      const m = l - c/2;
-      let r=0, g=0, b=0;
-      if (h >= 0 && h < 60) {r=c; g=x; b=0;}
-      else if (h < 120) {r=x; g=c; b=0;}
-      else if (h < 180) {r=0; g=c; b=x;}
-      else if (h < 240) {r=0; g=x; b=c;}
-      else if (h < 300) {r=x; g=0; b=c;}
-      else {r=c; g=0; b=x;}
-      r = Math.round((r + m) * 255);
-      g = Math.round((g + m) * 255);
-      b = Math.round((b + m) * 255);
-      return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-    }
+  <!-- QRCode.js library -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
-    // Convert HEX to HSL
-    function hexToHSL(H) {
-      let r = 0, g = 0, b = 0;
-      if (H.length === 4) {
-        r = "0x" + H[1] + H[1];
-        g = "0x" + H[2] + H[2];
-        b = "0x" + H[3] + H[3];
-      } else if (H.length === 7) {
-        r = "0x" + H[1] + H[2];
-        g = "0x" + H[3] + H[4];
-        b = "0x" + H[5] + H[6];
+  <script>
+    (() => {
+      // Globals
+      const app = document.getElementById('app');
+      const sideA = document.getElementById('sideA');
+      const sideB = document.getElementById('sideB');
+
+      // Scores and elements
+      const scoreA = document.getElementById('scoreA');
+      const scoreB = document.getElementById('scoreB');
+      const teamAName = document.getElementById('teamAName');
+      const teamBName = document.getElementById('teamBName');
+
+      // Buttons
+      const btnAPlus = document.getElementById('btnAPlus');
+      const btnAMinus = document.getElementById('btnAMinus');
+      const btnBPlus = document.getElementById('btnBPlus');
+      const btnBMinus = document.getElementById('btnBMinus');
+
+      // Server selects
+      const serverA = document.getElementById('serverA');
+      const serverB = document.getElementById('serverB');
+
+      // Layout
+      const btnLayout = document.getElementById('btnLayout');
+      const layoutIcon = document.getElementById('layoutIcon');
+
+      // Reset
+      const btnReset = document.getElementById('btnReset');
+
+      // Color pickers
+      const colorBtnA = document.getElementById('colorBtnA');
+      const colorBtnB = document.getElementById('colorBtnB');
+      const pickerA = document.getElementById('pickerA');
+      const pickerB = document.getElementById('pickerB');
+      const pickerCloseA = document.getElementById('pickerCloseA');
+      const pickerCloseB = document.getElementById('pickerCloseB');
+      const hueA = document.getElementById('hueA');
+      const hueB = document.getElementById('hueB');
+      const slA = document.getElementById('slA');
+      const slB = document.getElementById('slB');
+      const slCursorA = document.getElementById('slCursorA');
+      const slCursorB = document.getElementById('slCursorB');
+      const hexInputA = document.getElementById('hexInputA');
+      const hexInputB = document.getElementById('hexInputB');
+
+      // QR Code
+      const btnQR = document.getElementById('btnQR');
+      const qrContainer = document.getElementById('qrContainer');
+      const qrCloseBtn = document.getElementById('qrCloseBtn');
+      const qrCanvas = document.getElementById('qrCanvas');
+
+      // Timer controls
+      const timerToggleBtn = document.getElementById('timerToggleBtn');
+      const timerControls = document.getElementById('timerControls');
+      const timerStart = document.getElementById('timerStart');
+      const timerPause = document.getElementById('timerPause');
+      const timerReset = document.getElementById('timerReset');
+
+      // Score state
+      let scoreValueA = 0;
+      let scoreValueB = 0;
+
+      // Timer state
+      let timerRunning = false;
+      let timerInterval = null;
+      let timerSeconds = 0;
+
+      // Layout state
+      let layoutVertical = false;
+
+      // Color Picker state (Hue/Sat/Light)
+      // Using HSL representation for team backgrounds
+      let colorA = { h: 230, s: 80, l: 20 };
+      let colorB = { h: 210, s: 70, l: 30 };
+
+      // Utility: HSL to Hex converter
+      function hslToHex(h, s, l) {
+        s /= 100;
+        l /= 100;
+        const k = n => (n + h / 30) % 12;
+        const a = s * Math.min(l, 1 - l);
+        const f = n =>
+          l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+        return "#" + [f(0), f(8), f(4)].map(x => {
+          const hex = Math.round(x * 255).toString(16);
+          return hex.length === 1 ? "0" + hex : hex;
+        }).join("");
       }
-      r /= 255; g /= 255; b /= 255;
-      const max = Math.max(r, g, b), min = Math.min(r, g, b);
-      let h = 0, s = 0, l = (max + min) / 2;
 
-      if(max === min) {
-          h = s = 0;
-      } else {
-          const d = max - min;
-          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-          switch(max) {
-              case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-              case g: h = (b - r) / d + 2; break;
-              case b: h = (r - g) / d + 4; break;
-          }
-          h *= 60;
-      }
-      return {h: h, s: s*100, l: l*100};
-    }
-
-    // ColorPicker class for reusability
-    class ColorPicker {
-      constructor(teamId) {
-        this.teamId = teamId;
-        this.picker = document.getElementById(`picker${teamId}`);
-        this.hueSlider = document.getElementById(`hueSlider${teamId}`);
-        this.slPicker = document.getElementById(`slPicker${teamId}`);
-        this.slCursor = document.getElementById(`slCursor${teamId}`);
-        this.hexInput = document.getElementById(`hexInput${teamId}`);
-        this.colorBtn = document.getElementById(`colorBtn${teamId}`);
-        this.teamSide = document.getElementById(`side${teamId}`);
-        this.closeBtn = this.picker.querySelector(".picker-close");
-        this.isOpen = false;
-
-        // State
-        this.hue = 0; // 0-360
-        this.sat = 100; // 0-100
-        this.light = 30; // 0-100
-
-        // Bind handlers
-        this.onHueChange = this.onHueChange.bind(this);
-        this.onSLChange = this.onSLChange.bind(this);
-        this.onHexInput = this.onHexInput.bind(this);
-        this.openPicker = this.openPicker.bind(this);
-        this.closePicker = this.closePicker.bind(this);
-        this.outsideClick = this.outsideClick.bind(this);
-
-        // Setup
-        this.init();
-      }
-      init() {
-        // Initialize color from current background or hex input
-        const bg = getComputedStyle(this.teamSide).backgroundColor;
-        const rgb = this.parseRGB(bg);
-        if (rgb) {
-          const hsl = this.rgbToHsl(rgb.r, rgb.g, rgb.b);
-          this.hue = hsl.h;
-          this.sat = hsl.s;
-          this.light = hsl.l;
-          this.updateUI();
-        } else {
-          // fallback default colors
-          this.hue = 240;
-          this.sat = 60;
-          this.light = 30;
-          this.updateUI();
+      // Utility: Hex to HSL converter
+      function hexToHsl(H) {
+        let r = 0, g = 0, b = 0;
+        if (H.length === 4) {
+          r = parseInt("0x" + H[1] + H[1]);
+          g = parseInt("0x" + H[2] + H[2]);
+          b = parseInt("0x" + H[3] + H[3]);
+        } else if (H.length === 7) {
+          r = parseInt(H.substring(1, 3), 16);
+          g = parseInt(H.substring(3, 5), 16);
+          b = parseInt(H.substring(5, 7), 16);
         }
-        // Event listeners
-        this.colorBtn.addEventListener("click", this.openPicker);
-        this.closeBtn.addEventListener("click", this.closePicker);
-        this.closeBtn.addEventListener("keydown", e => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            this.closePicker();
-          }
-        });
-        this.hueSlider.addEventListener("mousedown", e => this.startHueDrag(e));
-        this.hueSlider.addEventListener("touchstart", e => this.startHueDrag(e));
-        this.slPicker.addEventListener("mousedown", e => this.startSLDrag(e));
-        this.slPicker.addEventListener("touchstart", e => this.startSLDrag(e));
-        this.hexInput.addEventListener("input", this.onHexInput);
-        window.addEventListener("resize", () => {
-          if (this.isOpen) this.positionPicker();
-        });
-      }
-      parseRGB(rgbStr) {
-        const m = rgbStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-        if (!m) return null;
-        return {r: +m[1], g: +m[2], b: +m[3]};
-      }
-      rgbToHsl(r,g,b){
         r /= 255; g /= 255; b /= 255;
         const max = Math.max(r, g, b), min = Math.min(r, g, b);
-        let h=0,s=0,l=(max+min)/2;
-        if(max===min) h=s=0;
-        else {
-          const d = max-min;
-          s = l>0.5 ? d/(2-max-min) : d/(max+min);
-          switch(max){
-            case r: h=(g-b)/d+(g<b?6:0); break;
-            case g: h=(b-r)/d+2; break;
-            case b: h=(r-g)/d+4; break;
+        let h = 0, s = 0, l = (max + min) / 2;
+        if (max !== min) {
+          const d = max - min;
+          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+          switch (max) {
+            case r: h = ((g - b) / d + (g < b ? 6 : 0)); break;
+            case g: h = ((b - r) / d + 2); break;
+            case b: h = ((r - g) / d + 4); break;
           }
-          h*=60;
+          h *= 60;
         }
-        return {h, s:s*100, l:l*100};
+        return { h, s: s * 100, l: l * 100 };
       }
-      updateUI() {
-        // Update hue slider thumb position
-        const huePercent = this.hue / 360;
-        this.hueSlider.querySelectorAll('.hue-thumb').forEach(t => t.remove());
-        const thumb = document.createElement('div');
-        thumb.classList.add('hue-thumb');
-        thumb.style.left = (huePercent * 100) + '%';
-        this.hueSlider.appendChild(thumb);
 
-        // Update saturation/lightness background
-        const color = hslToHex(this.hue, 100, 50);
-        this.slPicker.style.backgroundColor = color;
-
-        // Position saturation/lightness cursor
-        const x = (this.sat / 100) * this.slPicker.clientWidth;
-        const y = ((100 - this.light) / 100) * this.slPicker.clientHeight;
-        this.slCursor.style.left = x + 'px';
-        this.slCursor.style.top = y + 'px';
-
-        // Update hex input
-        const hex = hslToHex(this.hue, this.sat, this.light);
-        this.hexInput.value = hex.toUpperCase();
-
-        // Update team background color
-        this.teamSide.style.backgroundColor = hex;
+      // Update team background colors from HSL state
+      function updateTeamColors() {
+        const hexA = hslToHex(colorA.h, colorA.s, colorA.l);
+        const hexB = hslToHex(colorB.h, colorB.s, colorB.l);
+        sideA.style.backgroundColor = hexA;
+        sideB.style.backgroundColor = hexB;
+        hexInputA.value = hexA;
+        hexInputB.value = hexB;
       }
-      openPicker() {
-        if (this.isOpen) return;
-        this.isOpen = true;
-        this.picker.classList.add("open");
-        this.picker.setAttribute("aria-hidden", "false");
-        this.positionPicker();
-        // Focus hex input for accessibility
-        setTimeout(() => this.hexInput.focus(), 100);
 
-        // Click outside closes
-        setTimeout(() => {
-          window.addEventListener("click", this.outsideClick);
-          window.addEventListener("touchstart", this.outsideClick);
-        }, 100);
+      // Update hue slider background based on current HSL hue
+      function updateHueSlider(hueSlider, h) {
+        // hue slider uses fixed rainbow gradient, no dynamic update needed
       }
-      closePicker() {
-        if (!this.isOpen) return;
-        this.isOpen = false;
-        this.picker.classList.remove("open");
-        this.picker.setAttribute("aria-hidden", "true");
-        window.removeEventListener("click", this.outsideClick);
-        window.removeEventListener("touchstart", this.outsideClick);
-        this.colorBtn.focus();
+
+      // Update SL picker background color (hue base)
+      function updateSLBackground(slPicker, h) {
+        slPicker.style.backgroundColor = `hsl(${h}, 100%, 50%)`;
       }
-      outsideClick(e) {
-        if (!this.picker.contains(e.target) && e.target !== this.colorBtn) {
-          this.closePicker();
+
+      // Move SL cursor based on s, l percentages
+      function updateSLCursor(slCursor, s, l) {
+        const x = s * 2.8; // 280px width scale, relative to sl picker width 280px
+        const y = 160 - l * 1.6; // 160px height scale (inverted Y)
+        slCursor.style.left = `${x}px`;
+        slCursor.style.top = `${y}px`;
+      }
+
+      // Convert click position inside SL picker to s, l percentages
+      function slPosToSL(x, y, el) {
+        const rect = el.getBoundingClientRect();
+        const s = Math.min(Math.max((x - rect.left) / rect.width, 0), 1);
+        const l = 1 - Math.min(Math.max((y - rect.top) / rect.height, 0), 1);
+        return { s: s * 100, l: l * 100 };
+      }
+
+      // Sync color picker UI for team
+      function syncColorPicker(team) {
+        const color = team === 'A' ? colorA : colorB;
+        const hueSlider = team === 'A' ? hueA : hueB;
+        const slPicker = team === 'A' ? slA : slB;
+        const slCursor = team === 'A' ? slCursorA : slCursorB;
+        updateSLBackground(slPicker, color.h);
+        updateSLCursor(slCursor, color.s * 2.8 / 100, color.l * 1.6 / 100);
+        // hue slider is static rainbow; no dynamic cursor needed
+      }
+
+      // Show/hide pickers
+      function openPicker(team) {
+        if (team === 'A') {
+          pickerA.classList.add('open');
+          pickerB.classList.remove('open');
+        } else {
+          pickerB.classList.add('open');
+          pickerA.classList.remove('open');
         }
       }
-      positionPicker() {
-        // For now picker is positioned absolute inside team side bottom right
-        // No dynamic reposition needed as it's inside the section
+      function closePickers() {
+        pickerA.classList.remove('open');
+        pickerB.classList.remove('open');
       }
 
-      // Hue slider drag
-      startHueDrag(e) {
-        e.preventDefault();
-        this.updateHue(e);
-        const moveHandler = (evt) => this.updateHue(evt);
-        const upHandler = () => {
-          window.removeEventListener("mousemove", moveHandler);
-          window.removeEventListener("touchmove", moveHandler);
-          window.removeEventListener("mouseup", upHandler);
-          window.removeEventListener("touchend", upHandler);
+      // Outside click to close picker
+      document.addEventListener('mousedown', (e) => {
+        if (!pickerA.contains(e.target) && !colorBtnA.contains(e.target)) {
+          pickerA.classList.remove('open');
+        }
+        if (!pickerB.contains(e.target) && !colorBtnB.contains(e.target)) {
+          pickerB.classList.remove('open');
+        }
+      });
+
+      // Color picker event handlers
+      function setupColorPicker(team) {
+        const hueSlider = team === 'A' ? hueA : hueB;
+        const slPicker = team === 'A' ? slA : slB;
+        const slCursor = team === 'A' ? slCursorA : slCursorB;
+        const hexInput = team === 'A' ? hexInputA : hexInputB;
+        let color = team === 'A' ? colorA : colorB;
+
+        // On hue click or drag
+        function onHueChange(e) {
+          e.preventDefault();
+          const rect = hueSlider.getBoundingClientRect();
+          const x = e.touches ? e.touches[0].clientX : e.clientX;
+          let percent = Math.min(Math.max(x - rect.left, 0), rect.width) / rect.width;
+          color.h = Math.round(percent * 360);
+          if (color.h > 359) color.h = 359;
+          updateSLBackground(slPicker, color.h);
+          if (team === 'A') colorA = color; else colorB = color;
+          updateTeamColors();
+          syncColorPicker(team);
+        }
+
+        // On SL click or drag
+        function onSLChange(e) {
+          e.preventDefault();
+          const pos = slPosToSL(e.clientX, e.clientY, slPicker);
+          color.s = Math.round(pos.s);
+          color.l = Math.round(pos.l);
+          if (team === 'A') colorA = color; else colorB = color;
+          updateTeamColors();
+          updateSLCursor(slCursor, pos.s * 2.8 / 100, pos.l * 1.6 / 100);
+          hexInput.value = hslToHex(color.h, color.s, color.l);
+        }
+
+        hueSlider.addEventListener('mousedown', (e) => {
+          onHueChange(e);
+          const moveHandler = (ev) => onHueChange(ev);
+          const upHandler = () => {
+            document.removeEventListener('mousemove', moveHandler);
+            document.removeEventListener('mouseup', upHandler);
+          };
+          document.addEventListener('mousemove', moveHandler);
+          document.addEventListener('mouseup', upHandler);
+        });
+        hueSlider.addEventListener('touchstart', (e) => {
+          onHueChange(e);
+          const moveHandler = (ev) => onHueChange(ev);
+          const upHandler = () => {
+            document.removeEventListener('touchmove', moveHandler);
+            document.removeEventListener('touchend', upHandler);
+          };
+          document.addEventListener('touchmove', moveHandler);
+          document.addEventListener('touchend', upHandler);
+        }, { passive: false });
+
+        slPicker.addEventListener('mousedown', (e) => {
+          onSLChange(e);
+          const moveHandler = (ev) => onSLChange(ev);
+          const upHandler = () => {
+            document.removeEventListener('mousemove', moveHandler);
+            document.removeEventListener('mouseup', upHandler);
+          };
+          document.addEventListener('mousemove', moveHandler);
+          document.addEventListener('mouseup', upHandler);
+        });
+        slPicker.addEventListener('touchstart', (e) => {
+          onSLChange(e);
+          const moveHandler = (ev) => onSLChange(ev);
+          const upHandler = () => {
+            document.removeEventListener('touchmove', moveHandler);
+            document.removeEventListener('touchend', upHandler);
+          };
+          document.addEventListener('touchmove', moveHandler);
+          document.addEventListener('touchend', upHandler);
+        }, { passive: false });
+
+        // Hex input changes
+        hexInput.addEventListener('input', () => {
+          const val = hexInput.value.trim();
+          if (/^#([0-9A-Fa-f]{6})$/.test(val)) {
+            const hsl = hexToHsl(val);
+            color.h = Math.round(hsl.h);
+            color.s = Math.round(hsl.s);
+            color.l = Math.round(hsl.l);
+            if (team === 'A') colorA = color; else colorB = color;
+            updateTeamColors();
+            updateSLBackground(slPicker, color.h);
+            updateSLCursor(slCursor, color.s * 2.8 / 100, color.l * 1.6 / 100);
+          }
+        });
+
+        // Close button
+        const pickerClose = team === 'A' ? pickerCloseA : pickerCloseB;
+        pickerClose.addEventListener('click', () => {
+          closePickers();
+        });
+
+        // Open on button click
+        const colorBtn = team === 'A' ? colorBtnA : colorBtnB;
+        colorBtn.addEventListener('click', () => {
+          openPicker(team);
+        });
+      }
+
+      // Score buttons
+      btnAPlus.addEventListener('click', () => {
+        scoreValueA++;
+        scoreA.textContent = scoreValueA;
+      });
+      btnAMinus.addEventListener('click', () => {
+        if (scoreValueA > 0) scoreValueA--;
+        scoreA.textContent = scoreValueA;
+      });
+      btnBPlus.addEventListener('click', () => {
+        scoreValueB++;
+        scoreB.textContent = scoreValueB;
+      });
+      btnBMinus.addEventListener('click', () => {
+        if (scoreValueB > 0) scoreValueB--;
+        scoreB.textContent = scoreValueB;
+      });
+
+      // Server selectors - allow empty (unset)
+      [serverA, serverB].forEach(sel => {
+        sel.addEventListener('change', () => {
+          // just accept value as is, empty means no server
+        });
+      });
+
+      // Layout toggle
+      btnLayout.addEventListener('click', () => {
+        layoutVertical = !layoutVertical;
+        if (layoutVertical) {
+          app.classList.remove('horizontal');
+          app.classList.add('vertical');
+          layoutIcon.textContent = '↕️';
+          btnLayout.setAttribute('aria-pressed', 'true');
+
+          // Adjust layout for vertical:
+          // team names and scores stacked left,
+          // server + controls shifted right + up
+          sideA.style.flexDirection = 'row';
+          sideB.style.flexDirection = 'row';
+
+          // For vertical: 
+          // Make score area full width and height inside each team section
+          scoreA.style.fontSize = '7rem';
+          scoreB.style.fontSize = '7rem';
+
+          // Move server selects and buttons to top-right inside each team side (via CSS is complex, so adjust layout)
+          // Just keep the controls-row flexible for now; user can see buttons and selects normally
+
+        } else {
+          app.classList.remove('vertical');
+          app.classList.add('horizontal');
+          layoutIcon.textContent = '↔️';
+          btnLayout.setAttribute('aria-pressed', 'false');
+
+          sideA.style.flexDirection = 'column';
+          sideB.style.flexDirection = 'column';
+
+          scoreA.style.fontSize = '9rem';
+          scoreB.style.fontSize = '9rem';
+        }
+      });
+
+      // Reset button resets all
+      btnReset.addEventListener('click', () => {
+        scoreValueA = 0;
+        scoreValueB = 0;
+        scoreA.textContent = scoreValueA;
+        scoreB.textContent = scoreValueB;
+
+        teamAName.value = 'Team A';
+        teamBName.value = 'Team B';
+
+        serverA.value = '';
+        serverB.value = '';
+
+        colorA = { h: 230, s: 80, l: 20 };
+        colorB = { h: 210, s: 70, l: 30 };
+        updateTeamColors();
+        syncColorPicker('A');
+        syncColorPicker('B');
+
+        closePickers();
+        hideQRCode();
+        resetTimer();
+      });
+
+      // Timer controls
+      function formatTime(s) {
+        const m = Math.floor(s / 60);
+        const ss = s % 60;
+        return `${m}:${ss.toString().padStart(2, '0')}`;
+      }
+      function updateTimerDisplay() {
+        timerToggleBtn.textContent = `⏰ ${formatTime(timerSeconds)}`;
+      }
+      function startTimer() {
+        if (timerRunning) return;
+        timerRunning = true;
+        timerInterval = setInterval(() => {
+          timerSeconds++;
+          updateTimerDisplay();
+        }, 1000);
+      }
+      function pauseTimer() {
+        if (!timerRunning) return;
+        timerRunning = false;
+        clearInterval(timerInterval);
+      }
+      function resetTimer() {
+        pauseTimer();
+        timerSeconds = 0;
+        updateTimerDisplay();
+      }
+
+      timerToggleBtn.addEventListener('click', () => {
+        const open = timerControls.classList.toggle('open');
+        timerToggleBtn.setAttribute('aria-expanded', open.toString());
+      });
+      timerStart.addEventListener('click', () => startTimer());
+      timerPause.addEventListener('click', () => pauseTimer());
+      timerReset.addEventListener('click', () => resetTimer());
+
+      updateTimerDisplay();
+
+      // QR Code generation
+      function showQRCode() {
+        qrContainer.classList.add('open');
+        qrContainer.setAttribute('aria-hidden', 'false');
+
+        // Prepare URL / Data string
+        const scoreData = {
+          teamA: teamAName.value,
+          scoreA: scoreValueA,
+          serverA: serverA.value || null,
+          teamB: teamBName.value,
+          scoreB: scoreValueB,
+          serverB: serverB.value || null,
         };
-        window.addEventListener("mousemove", moveHandler);
-        window.addEventListener("touchmove", moveHandler);
-        window.addEventListener("mouseup", upHandler);
-        window.addEventListener("touchend", upHandler);
-      }
-      updateHue(e) {
-        const rect = this.hueSlider.getBoundingClientRect();
-        let x = e.touches ? e.touches[0].clientX : e.clientX;
-        let relativeX = clamp(x - rect.left, 0, rect.width);
-        this.hue = (relativeX / rect.width) * 360;
-        this.updateUI();
-      }
+        const dataStr = JSON.stringify(scoreData);
 
-      // Saturation/lightness drag
-      startSLDrag(e) {
-        e.preventDefault();
-        this.updateSL(e);
-        const moveHandler = (evt) => this.updateSL(evt);
-        const upHandler = () => {
-          window.removeEventListener("mousemove", moveHandler);
-          window.removeEventListener("touchmove", moveHandler);
-          window.removeEventListener("mouseup", upHandler);
-          window.removeEventListener("touchend", upHandler);
-        };
-        window.addEventListener("mousemove", moveHandler);
-        window.addEventListener("touchmove", moveHandler);
-        window.addEventListener("mouseup", upHandler);
-        window.addEventListener("touchend", upHandler);
-      }
-      updateSL(e) {
-        const rect = this.slPicker.getBoundingClientRect();
-        let x = e.touches ? e.touches[0].clientX : e.clientX;
-        let y = e.touches ? e.touches[0].clientY : e.clientY;
-        let relativeX = clamp(x - rect.left, 0, rect.width);
-        let relativeY = clamp(y - rect.top, 0, rect.height);
-        this.sat = (relativeX / rect.width) * 100;
-        this.light = 100 - (relativeY / rect.height) * 100;
-        this.updateUI();
-      }
-
-      onHexInput(e) {
-        const val = e.target.value.trim();
-        if(/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/.test(val)) {
-          // Valid hex input, update hue, sat, light accordingly
-          const hsl = hexToHSL(val);
-          this.hue = hsl.h;
-          this.sat = hsl.s;
-          this.light = hsl.l;
-          this.updateUI();
-        }
-      }
-    }
-
-    // Main application logic
-    class PickleballApp {
-      constructor() {
-        this.scoreA = 0;
-        this.scoreB = 0;
-        this.teamAName = document.getElementById("teamAName");
-        this.teamBName = document.getElementById("teamBName");
-        this.scoreADisplay = document.getElementById("scoreA");
-        this.scoreBDisplay = document.getElementById("scoreB");
-        this.btnAPlus = document.getElementById("btnAPlus");
-        this.btnAMinus = document.getElementById("btnAMinus");
-        this.btnBPlus = document.getElementById("btnBPlus");
-        this.btnBMinus = document.getElementById("btnBMinus");
-        this.undoBtn = document.getElementById("undoBtn");
-        this.resetBtn = document.getElementById("resetBtn");
-        this.switchServeBtn = document.getElementById("switchServeBtn");
-        this.serveBtnA1 = document.getElementById("serveBtnA");
-        this.serveBtnA2 = document.getElementById("serveBtnA2");
-        this.serveBtnB1 = document.getElementById("serveBtnB");
-        this.serveBtnB2 = document.getElementById("serveBtnB2");
-        this.toggleLayoutBtn = document.getElementById("toggleLayoutBtn");
-        this.appEl = document.getElementById("app");
-
-        this.serveTeam = "A"; // A or B
-        this.serveNumber = 1; // 1 or 2
-        this.history = [];
-
-        this.colorPickerA = new ColorPicker("A");
-        this.colorPickerB = new ColorPicker("B");
-
-        this.init();
-      }
-      init() {
-        // Update UI functions
-        this.updateScores();
-        this.updateServeUI();
-
-        // Bind buttons
-        this.btnAPlus.addEventListener("click", () => this.addScore("A"));
-        this.btnAMinus.addEventListener("click", () => this.subScore("A"));
-        this.btnBPlus.addEventListener("click", () => this.addScore("B"));
-        this.btnBMinus.addEventListener("click", () => this.subScore("B"));
-        this.undoBtn.addEventListener("click", () => this.undo());
-        this.resetBtn.addEventListener("click", () => this.reset());
-        this.switchServeBtn.addEventListener("click", () => this.switchServe());
-        this.serveBtnA1.addEventListener("click", () => this.setServe("A", 1));
-        this.serveBtnA2.addEventListener("click", () => this.setServe("A", 2));
-        this.serveBtnB1.addEventListener("click", () => this.setServe("B", 1));
-        this.serveBtnB2.addEventListener("click", () => this.setServe("B", 2));
-        this.toggleLayoutBtn.addEventListener("click", () => this.toggleLayout());
-
-        // Hide score buttons in fullscreen mode
-        document.addEventListener("fullscreenchange", () => this.onFullscreenChange());
-        this.onFullscreenChange();
-
-        // Accessibility: keep focus outline for keyboard users only
-        document.body.addEventListener('mousedown', () => {
-          document.body.classList.remove('using-keyboard');
-        });
-        document.body.addEventListener('keydown', (e) => {
-          if (e.key === 'Tab' || e.key === 'Shift') {
-            document.body.classList.add('using-keyboard');
+        QRCode.toCanvas(qrCanvas, dataStr, {
+          width: 200,
+          margin: 1,
+          color: {
+            dark: '#0ea5e9',
+            light: '#1e293b'
           }
+        }, function (error) {
+          if (error) console.error(error);
         });
       }
-      addScore(team) {
-        this.saveHistory();
-        if (team === "A") this.scoreA++;
-        else this.scoreB++;
-        this.updateScores();
+      function hideQRCode() {
+        qrContainer.classList.remove('open');
+        qrContainer.setAttribute('aria-hidden', 'true');
       }
-      subScore(team) {
-        this.saveHistory();
-        if (team === "A") this.scoreA = Math.max(0, this.scoreA -1);
-        else this.scoreB = Math.max(0, this.scoreB -1);
-        this.updateScores();
-      }
-      saveHistory() {
-        this.history.push({
-          scoreA: this.scoreA,
-          scoreB: this.scoreB,
-          serveTeam: this.serveTeam,
-          serveNumber: this.serveNumber
-        });
-        if(this.history.length > 50) this.history.shift(); // Limit undo stack size
-      }
-      undo() {
-        if (this.history.length === 0) return;
-        const last = this.history.pop();
-        this.scoreA = last.scoreA;
-        this.scoreB = last.scoreB;
-        this.serveTeam = last.serveTeam;
-        this.serveNumber = last.serveNumber;
-        this.updateScores();
-        this.updateServeUI();
-      }
-      reset() {
-        this.saveHistory();
-        this.scoreA = 0;
-        this.scoreB = 0;
-        this.serveTeam = "A";
-        this.serveNumber = 1;
-        this.updateScores();
-        this.updateServeUI();
-      }
-      switchServe() {
-        this.saveHistory();
-        if(this.serveTeam === "A") {
-          if(this.serveNumber === 1) this.serveNumber = 2;
-          else {
-            this.serveTeam = "B";
-            this.serveNumber = 1;
-          }
+      btnQR.addEventListener('click', () => {
+        if (qrContainer.classList.contains('open')) {
+          hideQRCode();
         } else {
-          if(this.serveNumber === 1) this.serveNumber = 2;
-          else {
-            this.serveTeam = "A";
-            this.serveNumber = 1;
-          }
+          showQRCode();
         }
-        this.updateServeUI();
-      }
-      setServe(team, number) {
-        this.saveHistory();
-        this.serveTeam = team;
-        this.serveNumber = number;
-        this.updateServeUI();
-      }
-      updateScores() {
-        this.scoreADisplay.textContent = this.scoreA;
-        this.scoreBDisplay.textContent = this.scoreB;
-      }
-      updateServeUI() {
-        const showA1 = this.serveTeam === "A" && this.serveNumber === 1;
-        const showA2 = this.serveTeam === "A" && this.serveNumber === 2;
-        const showB1 = this.serveTeam === "B" && this.serveNumber === 1;
-        const showB2 = this.serveTeam === "B" && this.serveNumber === 2;
+      });
+      qrCloseBtn.addEventListener('click', hideQRCode);
 
-        this.serveBtnA1.style.opacity = showA1 ? "1" : "0.35";
-        this.serveBtnA2.style.opacity = showA2 ? "1" : "0.35";
-        this.serveBtnB1.style.opacity = showB1 ? "1" : "0.35";
-        this.serveBtnB2.style.opacity = showB2 ? "1" : "0.35";
+      // Initialize
+      updateTeamColors();
+      syncColorPicker('A');
+      syncColorPicker('B');
 
-        this.serveBtnA1.disabled = !showA1;
-        this.serveBtnA2.disabled = !showA2;
-        this.serveBtnB1.disabled = !showB1;
-        this.serveBtnB2.disabled = !showB2;
-      }
-      toggleLayout() {
-        if(this.appEl.classList.contains("vertical")) {
-          this.appEl.classList.remove("vertical");
-          this.appEl.classList.add("horizontal");
-        } else {
-          this.appEl.classList.remove("horizontal");
-          this.appEl.classList.add("vertical");
-        }
-      }
-      onFullscreenChange() {
-        const fs = !!document.fullscreenElement;
-        if (fs) {
-          this.appEl.classList.add("fullscreen");
-        } else {
-          this.appEl.classList.remove("fullscreen");
-        }
-      }
-    }
+      setupColorPicker('A');
+      setupColorPicker('B');
 
-    // Initialize app on DOM ready
-    window.addEventListener("DOMContentLoaded", () => {
-      window.app = new PickleballApp();
-    });
-  })();
-</script>
+      // Accessibility: focus management for color picker close buttons
+      pickerCloseA.tabIndex = 0;
+      pickerCloseB.tabIndex = 0;
+
+    })();
+  </script>
 </body>
 </html>
