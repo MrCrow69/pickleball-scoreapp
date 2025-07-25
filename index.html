@@ -1,459 +1,878 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pickleball Scoreboard v2</title>
-<style>
-  :root {
-    --bg-color: #121212;
-    --card-bg: #1e1e1e;
-    --accent: #4ade80;
-    --text: #ffffff;
-    --button-bg: #2d2d2d;
-    --button-hover: #3e3e3e;
-    --success: #22c55e;
-    --error: #ef4444;
-  }
-
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    user-select: none;
-  }
-
-  body, html {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  #app {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: stretch;
-    width: 90vw;
-    max-width: 1000px;
-    height: 80vh;
-    border-radius: 2rem;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-    position: relative;
-  }
-
-  .side {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    background-color: var(--card-bg);
-    padding: 2rem;
-    border-radius: 1.5rem;
-    margin: 1rem;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
-  }
-
-  .team-header {
-    width: 100%;
-    text-align: center;
-  }
-
-  .team-name {
-    font-size: 2rem;
-    font-weight: 700;
-    background-color: #292929;
-    border-radius: 1rem;
-    color: var(--accent);
-    text-align: center;
-    padding: 0.3rem 0.6rem;
-    user-select: text;
-    outline: none;
-    border: none;
-    width: 100%;
-    max-width: 12ch;
-    margin: 0 auto;
-    transition: background-color 0.3s;
-  }
-  .team-name:focus {
-    background-color: #444;
-    box-shadow: 0 0 10px var(--accent);
-  }
-
-  .score {
-    font-size: 6rem;
-    font-weight: bold;
-    margin: 1rem 0;
-    color: var(--accent);
-    text-shadow: 0 0 10px var(--accent);
-  }
-
-  .buttons, .server-buttons {
-    display: flex;
-    gap: 1rem;
-  }
-
-  button {
-    font-size: 2.2rem;
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 1rem;
-    background-color: var(--button-bg);
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.6);
-  }
-
-  button:hover:not(:disabled) {
-    background-color: var(--button-hover);
-    transform: scale(1.05);
-  }
-
-  button:disabled {
-    cursor: default;
-    background-color: #444;
-    color: #888;
-  }
-
-  #controls {
-    position: absolute;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 1rem;
-  }
-
-  #controls button {
-    font-size: 1.4rem;
-    padding: 0.5rem 1.5rem;
-    border-radius: 1rem;
-    background-color: var(--button-bg);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-    user-select: none;
-  }
-  #controls button:hover {
-    background-color: var(--button-hover);
-  }
-
-  /* Fullscreen overlay and intro animation */
-  #intro {
-    position: fixed;
-    inset: 0;
-    background-color: var(--bg-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 4rem;
-    color: var(--accent);
-    font-weight: 900;
-    z-index: 9999;
-    animation: fadeOut 1s ease forwards;
-    animation-delay: 2s;
-  }
-  @keyframes fadeOut {
-    to {
-      opacity: 0;
-      visibility: hidden;
-    }
-  }
-
-  /* Visual feedback on score change */
-  .score.bump {
-    animation: bumpScale 0.25s ease forwards;
-  }
-  @keyframes bumpScale {
-    0% { transform: scale(1); color: var(--accent);}
-    50% { transform: scale(1.3); color: #22c55e; text-shadow: 0 0 20px #22c55e;}
-    100% { transform: scale(1); color: var(--accent);}
-  }
-
-  /* Responsive */
-  @media (max-width: 600px) {
-    #app {
-      flex-direction: column;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pickleball Scorer - Modern Sleek</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;900&display=swap');
+    /* Global styles */
+    body, html {
+      margin: 0; padding: 0;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+        Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background: #121212;
+      color: #eee;
+      user-select: none;
+      overflow-x: hidden;
       height: 100vh;
-      width: 100vw;
-      margin: 0;
-      border-radius: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
-    .side {
-      margin: 0.5rem 0;
-      height: 45vh;
+    #app {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 1rem;
+      overflow: hidden;
+      margin: 1rem;
+      box-shadow:
+        0 8px 24px rgb(0 0 0 / 0.7),
+        inset 0 0 0 1px rgb(255 255 255 / 0.05);
+      user-select: none;
+    }
+    #app.horizontal {
+      flex-direction: row;
+    }
+    .team-side {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      transition: all 0.4s ease;
+      border-radius: 1rem;
+      margin: 0.5rem;
+      box-shadow:
+        inset 0 0 40px 4px rgb(255 255 255 / 0.12);
+      user-select: none;
+      padding: 2rem;
+      min-width: 220px;
+      min-height: 280px;
+    }
+    .team-name {
+      font-size: 3.5rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.75rem;
+      background: transparent;
+      border-radius: 0.75rem;
+      color: #eee;
+      user-select: text;
+      max-width: 12ch;
+      text-align: center;
+      outline: none;
+      border: none;
+      cursor: text;
+      font-family: 'Poppins', sans-serif;
+    }
+    .team-name:focus {
+      background: #222;
+      box-shadow: 0 0 12px #0ea5e9cc;
+      outline: none;
     }
     .score {
-      font-size: 4rem;
+      font-size: 8rem;
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      user-select: none;
+      margin-bottom: 2.5rem;
+      text-shadow:
+        0 0 12px rgba(14, 165, 233, 0.75),
+        0 0 16px rgba(14, 165, 233, 0.55);
     }
-    button {
+    .btn-group {
+      display: flex;
+      gap: 1.25rem;
+      user-select: none;
+      transition: opacity 0.3s ease;
+    }
+    button.score-btn {
+      background: #0ea5e9;
+      border: none;
+      padding: 1rem 2.75rem;
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: #111;
+      border-radius: 1.5rem;
+      box-shadow:
+        0 10px 24px rgb(14 165 233 / 0.55);
+      transition: background-color 0.25s ease, transform 0.1s ease;
+      cursor: pointer;
+      user-select: none;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 60px;
+    }
+    button.score-btn:hover, button.score-btn:focus {
+      background: #0284c7;
+      outline: none;
+    }
+    button.score-btn:active {
+      transform: scale(0.92);
+    }
+    /* Serve buttons inside teams */
+    .serve-btn {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      background: #10b981;
+      border-radius: 1rem;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #111;
+      box-shadow: 0 6px 15px rgb(16 185 129 / 0.6);
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.25s ease, transform 0.1s ease;
+      font-family: 'Poppins', sans-serif;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .serve-btn:hover, .serve-btn:focus {
+      background: #059669;
+      outline: none;
+    }
+    .serve-btn:active {
+      transform: scale(0.95);
+    }
+
+    /* Color picker button */
+    .color-btn {
+      position: absolute;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: rgba(255 255 255 / 0.15);
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow:
+        0 0 14px rgba(255 255 255 / 0.15);
+      user-select: none;
       font-size: 1.8rem;
-      padding: 0.8rem 1.5rem;
+      line-height: 1;
     }
+    .color-btn:hover {
+      background: rgba(255 255 255 / 0.35);
+    }
+
+    /* Custom color picker panel */
+    .picker-panel {
+      position: absolute;
+      bottom: 70px;
+      right: 10px;
+      width: 280px;
+      background: rgba(255 255 255 / 0.12);
+      backdrop-filter: blur(20px);
+      border-radius: 1rem;
+      padding: 1.2rem 1.8rem 1.8rem 1.8rem;
+      box-shadow:
+        0 0 40px rgba(14, 165, 233, 0.5);
+      user-select: none;
+      z-index: 30;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.85);
+      transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .picker-panel.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+    }
+
+    /* Hue slider */
+    .hue-slider {
+      position: relative;
+      width: 100%;
+      height: 20px;
+      border-radius: 0.85rem;
+      background: linear-gradient(to right,
+        #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
+      cursor: pointer;
+    }
+    .hue-thumb {
+      position: absolute;
+      top: 50%;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 3px solid white;
+      background: black;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 8px rgba(255,255,255,0.9);
+      cursor: pointer;
+      user-select: none;
+      touch-action: none;
+      transition: box-shadow 0.2s ease;
+    }
+    .hue-thumb:hover {
+      box-shadow: 0 0 14px #0ea5e9ee;
+    }
+
+    /* Saturation-Lightness picker */
+    .sl-picker {
+      position: relative;
+      width: 100%;
+      height: 160px;
+      border-radius: 1rem;
+      cursor: crosshair;
+      user-select: none;
+      background: red;
+      box-shadow:
+        inset 0 0 25px rgba(0,0,0,0.25);
+    }
+    .sl-white-gradient {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to right, #fff, rgba(255,255,255,0));
+      border-radius: 1rem;
+      pointer-events: none;
+    }
+    .sl-black-gradient {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(to top, #000, rgba(0,0,0,0));
+      border-radius: 1rem;
+      pointer-events: none;
+    }
+    .sl-cursor {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0 0 14px #0ea5e9;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      transition: box-shadow 0.3s ease;
+    }
+
+    /* Hex input */
+    .hex-input {
+      width: 100%;
+      padding: 0.55rem 1.1rem;
+      font-size: 1.35rem;
+      font-weight: 700;
+      border-radius: 0.85rem;
+      border: none;
+      background: rgba(255 255 255 / 0.15);
+      color: white;
+      outline: none;
+      user-select: text;
+      letter-spacing: 0.07em;
+      font-family: 'Poppins', sans-serif;
+      transition: background-color 0.25s ease;
+    }
+    .hex-input:focus {
+      background: rgba(14, 165, 233, 0.3);
+      outline: none;
+    }
+    .hex-input::selection {
+      background: #0ea5e9aa;
+    }
+
+    /* Close button for picker */
+    .picker-close {
+      position: absolute;
+      top: 0.4rem;
+      right: 0.75rem;
+      font-size: 1.9rem;
+      font-weight: 900;
+      cursor: pointer;
+      color: white;
+      user-select: none;
+      transition: color 0.2s ease;
+      line-height: 1;
+    }
+    .picker-close:hover {
+      color: #0ea5e9cc;
+    }
+
+    /* Controls bar */
     #controls {
-      bottom: 0.5rem;
-      flex-wrap: wrap;
-      width: 90vw;
-      left: 50%;
-      transform: translateX(-50%);
+      background: #1e1e1e;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 1rem;
+      margin: 0 1rem 1rem 1rem;
+      box-shadow: 0 5px 35px rgba(0,0,0,0.6);
+      user-select: none;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      color: #bbb;
     }
-  }
-</style>
+    #controls button {
+      background: #0ea5e9;
+      box-shadow: 0 10px 30px rgb(14 165 233 / 0.75);
+      padding: 0.75rem 2rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-radius: 1.5rem;
+      cursor: pointer;
+      user-select: none;
+      color: #111;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+      font-family: 'Poppins', sans-serif;
+    }
+    #controls button:hover, #controls button:focus {
+      background: #0284c7;
+      outline: none;
+    }
+    #controls button:active {
+      transform: scale(0.94);
+    }
+
+    /* Hide buttons when fullscreen */
+    .fullscreen .btn-group {
+      opacity: 0;
+      pointer-events: none;
+      height: 0;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      transition: opacity 0.4s ease;
+    }
+    /* Responsive: smaller font on very narrow */
+    @media (max-width: 450px) {
+      .team-name {
+        font-size: 2.5rem;
+      }
+      .score {
+        font-size: 6rem;
+      }
+      button.score-btn {
+        font-size: 1.25rem;
+        padding: 0.9rem 2rem;
+        min-width: 50px;
+      }
+      .serve-btn {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.9rem;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div id="app" class="vertical" aria-label="Pickleball Scoring App">
+    <!-- Team A Side -->
+    <section id="sideA" class="team-side" tabindex="0" aria-label="Team A scoring side" style="background-color:#0f172a;">
+      <input type="text" aria-label="Team A Name" id="teamAName" class="team-name" maxlength="12" value="Team A" />
+      <div id="scoreA" class="score" aria-live="polite" aria-atomic="true">0</div>
+      <div class="btn-group" role="group" aria-label="Team A score controls">
+        <button id="btnAPlus" class="score-btn" aria-label="Increase Team A score">+</button>
+        <button id="btnAMinus" class="score-btn" aria-label="Decrease Team A score">−</button>
+      </div>
+      <button aria-label="Serve for Team A" class="serve-btn" id="serveBtnA" title="Serve Team A">Serve 1</button>
+      <button aria-label="Serve for Team A" class="serve-btn" id="serveBtnA2" title="Serve Team A 2" style="bottom: 1.5rem; left: 85px;">Serve 2</button>
+      <button aria-label="Open Team A color picker" class="color-btn" id="colorBtnA" title="Change Team A background color">🎨</button>
+      <div class="picker-panel" id="pickerA" aria-hidden="true" role="dialog" aria-modal="true" tabindex="-1">
+        <div class="picker-close" role="button" tabindex="0" aria-label="Close Team A color picker">&times;</div>
+        <div class="hue-slider" id="hueSliderA" tabindex="0" aria-label="Hue selector"></div>
+        <div class="sl-picker" id="slPickerA" tabindex="0" aria-label="Saturation and lightness selector">
+          <div class="sl-white-gradient"></div>
+          <div class="sl-black-gradient"></div>
+          <div class="sl-cursor" id="slCursorA"></div>
+        </div>
+        <input type="text" id="hexInputA" class="hex-input" aria-label="Hex color input for Team A" maxlength="7" value="#0f172a" />
+      </div>
+    </section>
 
-<div id="intro">Pickleball Score</div>
+    <!-- Team B Side -->
+    <section id="sideB" class="team-side" tabindex="0" aria-label="Team B scoring side" style="background-color:#581c87;">
+      <input type="text" aria-label="Team B Name" id="teamBName" class="team-name" maxlength="12" value="Team B" />
+      <div id="scoreB" class="score" aria-live="polite" aria-atomic="true">0</div>
+      <div class="btn-group" role="group" aria-label="Team B score controls">
+        <button id="btnBPlus" class="score-btn" aria-label="Increase Team B score">+</button>
+        <button id="btnBMinus" class="score-btn" aria-label="Decrease Team B score">−</button>
+      </div>
+      <button aria-label="Serve for Team B" class="serve-btn" id="serveBtnB" title="Serve Team B">Serve 1</button>
+      <button aria-label="Serve for Team B" class="serve-btn" id="serveBtnB2" title="Serve Team B 2" style="bottom: 1.5rem; left: 85px;">Serve 2</button>
+      <button aria-label="Open Team B color picker" class="color-btn" id="colorBtnB" title="Change Team B background color">🎨</button>
+      <div class="picker-panel" id="pickerB" aria-hidden="true" role="dialog" aria-modal="true" tabindex="-1">
+        <div class="picker-close" role="button" tabindex="0" aria-label="Close Team B color picker">&times;</div>
+        <div class="hue-slider" id="hueSliderB" tabindex="0" aria-label="Hue selector"></div>
+        <div class="sl-picker" id="slPickerB" tabindex="0" aria-label="Saturation and lightness selector">
+          <div class="sl-white-gradient"></div>
+          <div class="sl-black-gradient"></div>
+          <div class="sl-cursor" id="slCursorB"></div>
+        </div>
+        <input type="text" id="hexInputB" class="hex-input" aria-label="Hex color input for Team B" maxlength="7" value="#581c87" />
+      </div>
+    </section>
+  </div>
 
-<div id="app" tabindex="0" aria-label="Pickleball scoring app">
-  <section class="side" id="teamA" aria-label="Team A side">
-    <header class="team-header">
-      <input aria-label="Team A name" id="teamAName" class="team-name" maxlength="12" spellcheck="false" value="Team A" />
-    </header>
-    <div class="score" id="scoreA" aria-live="polite" aria-atomic="true">0</div>
-    <div class="buttons" role="group" aria-label="Team A score controls">
-      <button id="btnAPlus" aria-label="Increase Team A score">+</button>
-      <button id="btnAMinus" aria-label="Decrease Team A score">−</button>
+  <div id="controls" role="region" aria-label="Scoring controls">
+    <div>
+      <button id="undoBtn" aria-label="Undo last score change">Undo</button>
+      <button id="resetBtn" aria-label="Reset scores">Reset</button>
+      <button id="switchServeBtn" aria-label="Switch serve">Switch Serve</button>
     </div>
-    <div class="server-buttons" role="group" aria-label="Team A server controls" style="margin-top: 1.5rem;">
-      <button id="server1A" aria-label="Set Server 1 for Team A">Server 1</button>
-      <button id="server2A" aria-label="Set Server 2 for Team A">Server 2</button>
+    <div>
+      <button id="toggleLayoutBtn" aria-label="Toggle layout orientation">Toggle Layout</button>
     </div>
-  </section>
-
-  <section class="side" id="teamB" aria-label="Team B side">
-    <header class="team-header">
-      <input aria-label="Team B name" id="teamBName" class="team-name" maxlength="12" spellcheck="false" value="Team B" />
-    </header>
-    <div class="score" id="scoreB" aria-live="polite" aria-atomic="true">0</div>
-    <div class="buttons" role="group" aria-label="Team B score controls">
-      <button id="btnBPlus" aria-label="Increase Team B score">+</button>
-      <button id="btnBMinus" aria-label="Decrease Team B score">−</button>
-    </div>
-    <div class="server-buttons" role="group" aria-label="Team B server controls" style="margin-top: 1.5rem;">
-      <button id="server1B" aria-label="Set Server 1 for Team B">Server 1</button>
-      <button id="server2B" aria-label="Set Server 2 for Team B">Server 2</button>
-    </div>
-  </section>
-</div>
-
-<div id="controls" role="region" aria-label="App controls">
-  <button id="undoBtn" aria-label="Undo last score change">Undo</button>
-  <button id="resetBtn" aria-label="Reset scores">Reset</button>
-  <button id="fullscreenBtn" aria-label="Toggle fullscreen mode">Fullscreen</button>
-</div>
+  </div>
 
 <script>
-(() => {
-  'use strict';
+  (() => {
+    // Utility: Clamp number between min/max
+    const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
-  // Variables for state
-  let scores = { A: 0, B: 0 };
-  let history = [];
-  let server = { A: null, B: null }; // can be 1 or 2
-  let teamNames = { A: 'Team A', B: 'Team B' };
-  const scoreLimit = 11;
-
-  // Elements
-  const scoreAEl = document.getElementById('scoreA');
-  const scoreBEl = document.getElementById('scoreB');
-  const teamANameEl = document.getElementById('teamAName');
-  const teamBNameEl = document.getElementById('teamBName');
-
-  const btnAPlus = document.getElementById('btnAPlus');
-  const btnAMinus = document.getElementById('btnAMinus');
-  const btnBPlus = document.getElementById('btnBPlus');
-  const btnBMinus = document.getElementById('btnBMinus');
-
-  const undoBtn = document.getElementById('undoBtn');
-  const resetBtn = document.getElementById('resetBtn');
-  const fullscreenBtn = document.getElementById('fullscreenBtn');
-
-  const server1A = document.getElementById('server1A');
-  const server2A = document.getElementById('server2A');
-  const server1B = document.getElementById('server1B');
-  const server2B = document.getElementById('server2B');
-
-  const intro = document.getElementById('intro');
-  const app = document.getElementById('app');
-
-  // Utility functions
-  function saveState() {
-    localStorage.setItem('scores', JSON.stringify(scores));
-    localStorage.setItem('history', JSON.stringify(history));
-    localStorage.setItem('servers', JSON.stringify(server));
-    localStorage.setItem('teamNames', JSON.stringify(teamNames));
-  }
-
-  function loadState() {
-    const s = JSON.parse(localStorage.getItem('scores'));
-    if(s && typeof s.A === 'number' && typeof s.B === 'number') scores = s;
-    const h = JSON.parse(localStorage.getItem('history'));
-    if(Array.isArray(h)) history = h;
-    const serv = JSON.parse(localStorage.getItem('servers'));
-    if(serv) server = serv;
-    const tNames = JSON.parse(localStorage.getItem('teamNames'));
-    if(tNames) {
-      teamNames = tNames;
-      teamANameEl.value = teamNames.A;
-      teamBNameEl.value = teamNames.B;
-    }
-  }
-
-  function updateScoreUI() {
-    scoreAEl.textContent = scores.A;
-    scoreBEl.textContent = scores.B;
-  }
-
-  function updateServerUI() {
-    // Clear all server button highlights first
-    [server1A, server2A, server1B, server2B].forEach(btn => btn.style.backgroundColor = '');
-
-    if(server.A === 1) server1A.style.backgroundColor = 'var(--success)';
-    if(server.A === 2) server2A.style.backgroundColor = 'var(--success)';
-    if(server.B === 1) server1B.style.backgroundColor = 'var(--success)';
-    if(server.B === 2) server2B.style.backgroundColor = 'var(--success)';
-  }
-
-  function updateNamesUI() {
-    teamANameEl.value = teamNames.A;
-    teamBNameEl.value = teamNames.B;
-  }
-
-  // Score change with history for undo
-  function changeScore(team, delta) {
-    if(delta === 0) return;
-    // Prevent changing if game over
-    if(isGameOver()) return;
-
-    // Save current state to history
-    history.push(JSON.stringify(scores));
-
-    if(team === 'A') {
-      scores.A = Math.max(0, scores.A + delta);
-    } else if(team === 'B') {
-      scores.B = Math.max(0, scores.B + delta);
+    // Convert HSL to HEX
+    function hslToHex(h, s, l) {
+      s /= 100; l /= 100;
+      const c = (1 - Math.abs(2 * l - 1)) * s;
+      const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      const m = l - c/2;
+      let r=0, g=0, b=0;
+      if (h >= 0 && h < 60) {r=c; g=x; b=0;}
+      else if (h < 120) {r=x; g=c; b=0;}
+      else if (h < 180) {r=0; g=c; b=x;}
+      else if (h < 240) {r=0; g=x; b=c;}
+      else if (h < 300) {r=x; g=0; b=c;}
+      else {r=c; g=0; b=x;}
+      r = Math.round((r + m) * 255);
+      g = Math.round((g + m) * 255);
+      b = Math.round((b + m) * 255);
+      return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
     }
 
-    updateScoreUI();
-    highlightScore(team);
-    saveState();
+    // Convert HEX to HSL
+    function hexToHSL(H) {
+      let r = 0, g = 0, b = 0;
+      if (H.length === 4) {
+        r = "0x" + H[1] + H[1];
+        g = "0x" + H[2] + H[2];
+        b = "0x" + H[3] + H[3];
+      } else if (H.length === 7) {
+        r = "0x" + H[1] + H[2];
+        g = "0x" + H[3] + H[4];
+        b = "0x" + H[5] + H[6];
+      }
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h = 0, s = 0, l = (max + min) / 2;
 
-    if(isGameOver()) {
-      alert(`${teamNames[team]} wins!`);
-      disableScoreButtons(true);
+      if(max === min) {
+          h = s = 0;
+      } else {
+          const d = max - min;
+          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+          switch(max) {
+              case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+              case g: h = (b - r) / d + 2; break;
+              case b: h = (r - g) / d + 4; break;
+          }
+          h *= 60;
+      }
+      return {h: h, s: s*100, l: l*100};
     }
-  }
 
-  // Undo last score change
-  function undo() {
-    if(history.length === 0) return;
-    const last = history.pop();
-    scores = JSON.parse(last);
-    updateScoreUI();
-    disableScoreButtons(false);
-    saveState();
-  }
+    // ColorPicker class for reusability
+    class ColorPicker {
+      constructor(teamId) {
+        this.teamId = teamId;
+        this.picker = document.getElementById(`picker${teamId}`);
+        this.hueSlider = document.getElementById(`hueSlider${teamId}`);
+        this.slPicker = document.getElementById(`slPicker${teamId}`);
+        this.slCursor = document.getElementById(`slCursor${teamId}`);
+        this.hexInput = document.getElementById(`hexInput${teamId}`);
+        this.colorBtn = document.getElementById(`colorBtn${teamId}`);
+        this.teamSide = document.getElementById(`side${teamId}`);
+        this.closeBtn = this.picker.querySelector(".picker-close");
+        this.isOpen = false;
 
-  // Reset scores and state
-  function reset() {
-    if(!confirm('Reset scores and servers?')) return;
-    history = [];
-    scores = { A: 0, B: 0 };
-    server = { A: null, B: null };
-    updateScoreUI();
-    updateServerUI();
-    disableScoreButtons(false);
-    saveState();
-  }
+        // State
+        this.hue = 0; // 0-360
+        this.sat = 100; // 0-100
+        this.light = 30; // 0-100
 
-  // Check if game is over
-  function isGameOver() {
-    return scores.A >= scoreLimit || scores.B >= scoreLimit;
-  }
+        // Bind handlers
+        this.onHueChange = this.onHueChange.bind(this);
+        this.onSLChange = this.onSLChange.bind(this);
+        this.onHexInput = this.onHexInput.bind(this);
+        this.openPicker = this.openPicker.bind(this);
+        this.closePicker = this.closePicker.bind(this);
+        this.outsideClick = this.outsideClick.bind(this);
 
-  // Disable/enable score buttons on game over
-  function disableScoreButtons(disable) {
-    btnAPlus.disabled = disable;
-    btnAMinus.disabled = disable;
-    btnBPlus.disabled = disable;
-    btnBMinus.disabled = disable;
-  }
+        // Setup
+        this.init();
+      }
+      init() {
+        // Initialize color from current background or hex input
+        const bg = getComputedStyle(this.teamSide).backgroundColor;
+        const rgb = this.parseRGB(bg);
+        if (rgb) {
+          const hsl = this.rgbToHsl(rgb.r, rgb.g, rgb.b);
+          this.hue = hsl.h;
+          this.sat = hsl.s;
+          this.light = hsl.l;
+          this.updateUI();
+        } else {
+          // fallback default colors
+          this.hue = 240;
+          this.sat = 60;
+          this.light = 30;
+          this.updateUI();
+        }
+        // Event listeners
+        this.colorBtn.addEventListener("click", this.openPicker);
+        this.closeBtn.addEventListener("click", this.closePicker);
+        this.closeBtn.addEventListener("keydown", e => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            this.closePicker();
+          }
+        });
+        this.hueSlider.addEventListener("mousedown", e => this.startHueDrag(e));
+        this.hueSlider.addEventListener("touchstart", e => this.startHueDrag(e));
+        this.slPicker.addEventListener("mousedown", e => this.startSLDrag(e));
+        this.slPicker.addEventListener("touchstart", e => this.startSLDrag(e));
+        this.hexInput.addEventListener("input", this.onHexInput);
+        window.addEventListener("resize", () => {
+          if (this.isOpen) this.positionPicker();
+        });
+      }
+      parseRGB(rgbStr) {
+        const m = rgbStr.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+        if (!m) return null;
+        return {r: +m[1], g: +m[2], b: +m[3]};
+      }
+      rgbToHsl(r,g,b){
+        r /= 255; g /= 255; b /= 255;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        let h=0,s=0,l=(max+min)/2;
+        if(max===min) h=s=0;
+        else {
+          const d = max-min;
+          s = l>0.5 ? d/(2-max-min) : d/(max+min);
+          switch(max){
+            case r: h=(g-b)/d+(g<b?6:0); break;
+            case g: h=(b-r)/d+2; break;
+            case b: h=(r-g)/d+4; break;
+          }
+          h*=60;
+        }
+        return {h, s:s*100, l:l*100};
+      }
+      updateUI() {
+        // Update hue slider thumb position
+        const huePercent = this.hue / 360;
+        this.hueSlider.querySelectorAll('.hue-thumb').forEach(t => t.remove());
+        const thumb = document.createElement('div');
+        thumb.classList.add('hue-thumb');
+        thumb.style.left = (huePercent * 100) + '%';
+        this.hueSlider.appendChild(thumb);
 
-  // Visual score bump effect
-  function highlightScore(team) {
-    const el = team === 'A' ? scoreAEl : scoreBEl;
-    el.classList.remove('bump');
-    void el.offsetWidth; // trigger reflow for restart
-    el.classList.add('bump');
-  }
+        // Update saturation/lightness background
+        const color = hslToHex(this.hue, 100, 50);
+        this.slPicker.style.backgroundColor = color;
 
-  // Set server for team
-  function setServer(team, num) {
-    server[team] = num;
-    updateServerUI();
-    saveState();
-  }
+        // Position saturation/lightness cursor
+        const x = (this.sat / 100) * this.slPicker.clientWidth;
+        const y = ((100 - this.light) / 100) * this.slPicker.clientHeight;
+        this.slCursor.style.left = x + 'px';
+        this.slCursor.style.top = y + 'px';
 
-  // Fullscreen toggle
-  function toggleFullscreen() {
-    if(!document.fullscreenElement) {
-      app.requestFullscreen().catch(() => {});
-    } else {
-      document.exitFullscreen();
+        // Update hex input
+        const hex = hslToHex(this.hue, this.sat, this.light);
+        this.hexInput.value = hex.toUpperCase();
+
+        // Update team background color
+        this.teamSide.style.backgroundColor = hex;
+      }
+      openPicker() {
+        if (this.isOpen) return;
+        this.isOpen = true;
+        this.picker.classList.add("open");
+        this.picker.setAttribute("aria-hidden", "false");
+        this.positionPicker();
+        // Focus hex input for accessibility
+        setTimeout(() => this.hexInput.focus(), 100);
+
+        // Click outside closes
+        setTimeout(() => {
+          window.addEventListener("click", this.outsideClick);
+          window.addEventListener("touchstart", this.outsideClick);
+        }, 100);
+      }
+      closePicker() {
+        if (!this.isOpen) return;
+        this.isOpen = false;
+        this.picker.classList.remove("open");
+        this.picker.setAttribute("aria-hidden", "true");
+        window.removeEventListener("click", this.outsideClick);
+        window.removeEventListener("touchstart", this.outsideClick);
+        this.colorBtn.focus();
+      }
+      outsideClick(e) {
+        if (!this.picker.contains(e.target) && e.target !== this.colorBtn) {
+          this.closePicker();
+        }
+      }
+      positionPicker() {
+        // For now picker is positioned absolute inside team side bottom right
+        // No dynamic reposition needed as it's inside the section
+      }
+
+      // Hue slider drag
+      startHueDrag(e) {
+        e.preventDefault();
+        this.updateHue(e);
+        const moveHandler = (evt) => this.updateHue(evt);
+        const upHandler = () => {
+          window.removeEventListener("mousemove", moveHandler);
+          window.removeEventListener("touchmove", moveHandler);
+          window.removeEventListener("mouseup", upHandler);
+          window.removeEventListener("touchend", upHandler);
+        };
+        window.addEventListener("mousemove", moveHandler);
+        window.addEventListener("touchmove", moveHandler);
+        window.addEventListener("mouseup", upHandler);
+        window.addEventListener("touchend", upHandler);
+      }
+      updateHue(e) {
+        const rect = this.hueSlider.getBoundingClientRect();
+        let x = e.touches ? e.touches[0].clientX : e.clientX;
+        let relativeX = clamp(x - rect.left, 0, rect.width);
+        this.hue = (relativeX / rect.width) * 360;
+        this.updateUI();
+      }
+
+      // Saturation/lightness drag
+      startSLDrag(e) {
+        e.preventDefault();
+        this.updateSL(e);
+        const moveHandler = (evt) => this.updateSL(evt);
+        const upHandler = () => {
+          window.removeEventListener("mousemove", moveHandler);
+          window.removeEventListener("touchmove", moveHandler);
+          window.removeEventListener("mouseup", upHandler);
+          window.removeEventListener("touchend", upHandler);
+        };
+        window.addEventListener("mousemove", moveHandler);
+        window.addEventListener("touchmove", moveHandler);
+        window.addEventListener("mouseup", upHandler);
+        window.addEventListener("touchend", upHandler);
+      }
+      updateSL(e) {
+        const rect = this.slPicker.getBoundingClientRect();
+        let x = e.touches ? e.touches[0].clientX : e.clientX;
+        let y = e.touches ? e.touches[0].clientY : e.clientY;
+        let relativeX = clamp(x - rect.left, 0, rect.width);
+        let relativeY = clamp(y - rect.top, 0, rect.height);
+        this.sat = (relativeX / rect.width) * 100;
+        this.light = 100 - (relativeY / rect.height) * 100;
+        this.updateUI();
+      }
+
+      onHexInput(e) {
+        const val = e.target.value.trim();
+        if(/^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$/.test(val)) {
+          // Valid hex input, update hue, sat, light accordingly
+          const hsl = hexToHSL(val);
+          this.hue = hsl.h;
+          this.sat = hsl.s;
+          this.light = hsl.l;
+          this.updateUI();
+        }
+      }
     }
-  }
 
-  // Load saved state on start
-  loadState();
-  updateScoreUI();
-  updateServerUI();
+    // Main application logic
+    class PickleballApp {
+      constructor() {
+        this.scoreA = 0;
+        this.scoreB = 0;
+        this.teamAName = document.getElementById("teamAName");
+        this.teamBName = document.getElementById("teamBName");
+        this.scoreADisplay = document.getElementById("scoreA");
+        this.scoreBDisplay = document.getElementById("scoreB");
+        this.btnAPlus = document.getElementById("btnAPlus");
+        this.btnAMinus = document.getElementById("btnAMinus");
+        this.btnBPlus = document.getElementById("btnBPlus");
+        this.btnBMinus = document.getElementById("btnBMinus");
+        this.undoBtn = document.getElementById("undoBtn");
+        this.resetBtn = document.getElementById("resetBtn");
+        this.switchServeBtn = document.getElementById("switchServeBtn");
+        this.serveBtnA1 = document.getElementById("serveBtnA");
+        this.serveBtnA2 = document.getElementById("serveBtnA2");
+        this.serveBtnB1 = document.getElementById("serveBtnB");
+        this.serveBtnB2 = document.getElementById("serveBtnB2");
+        this.toggleLayoutBtn = document.getElementById("toggleLayoutBtn");
+        this.appEl = document.getElementById("app");
 
-  // Event Listeners
-  btnAPlus.addEventListener('click', () => changeScore('A', +1));
-  btnAMinus.addEventListener('click', () => changeScore('A', -1));
-  btnBPlus.addEventListener('click', () => changeScore('B', +1));
-  btnBMinus.addEventListener('click', () => changeScore('B', -1));
+        this.serveTeam = "A"; // A or B
+        this.serveNumber = 1; // 1 or 2
+        this.history = [];
 
-  undoBtn.addEventListener('click', undo);
-  resetBtn.addEventListener('click', reset);
-  fullscreenBtn.addEventListener('click', toggleFullscreen);
+        this.colorPickerA = new ColorPicker("A");
+        this.colorPickerB = new ColorPicker("B");
 
-  server1A.addEventListener('click', () => setServer('A', 1));
-  server2A.addEventListener('click', () => setServer('A', 2));
-  server1B.addEventListener('click', () => setServer('B', 1));
-  server2B.addEventListener('click', () => setServer('B', 2));
+        this.init();
+      }
+      init() {
+        // Update UI functions
+        this.updateScores();
+        this.updateServeUI();
 
-  // Editable team names with persistence
-  teamANameEl.addEventListener('input', (e) => {
-    teamNames.A = e.target.value.trim() || 'Team A';
-    saveState();
-  });
-  teamBNameEl.addEventListener('input', (e) => {
-    teamNames.B = e.target.value.trim() || 'Team B';
-    saveState();
-  });
+        // Bind buttons
+        this.btnAPlus.addEventListener("click", () => this.addScore("A"));
+        this.btnAMinus.addEventListener("click", () => this.subScore("A"));
+        this.btnBPlus.addEventListener("click", () => this.addScore("B"));
+        this.btnBMinus.addEventListener("click", () => this.subScore("B"));
+        this.undoBtn.addEventListener("click", () => this.undo());
+        this.resetBtn.addEventListener("click", () => this.reset());
+        this.switchServeBtn.addEventListener("click", () => this.switchServe());
+        this.serveBtnA1.addEventListener("click", () => this.setServe("A", 1));
+        this.serveBtnA2.addEventListener("click", () => this.setServe("A", 2));
+        this.serveBtnB1.addEventListener("click", () => this.setServe("B", 1));
+        this.serveBtnB2.addEventListener("click", () => this.setServe("B", 2));
+        this.toggleLayoutBtn.addEventListener("click", () => this.toggleLayout());
 
-  // Remove intro after animation
-  intro.addEventListener('animationend', () => {
-    intro.style.display = 'none';
-  });
+        // Hide score buttons in fullscreen mode
+        document.addEventListener("fullscreenchange", () => this.onFullscreenChange());
+        this.onFullscreenChange();
 
-  // Keyboard shortcuts for accessibility (optional)
-  document.addEventListener('keydown', (e) => {
-    if(e.key === 'f' || e.key === 'F') toggleFullscreen();
-    if(e.key === 'r' || e.key === 'R') reset();
-    if(e.key === 'z' && (e.ctrlKey || e.metaKey)) undo();
-  });
+        // Accessibility: keep focus outline for keyboard users only
+        document.body.addEventListener('mousedown', () => {
+          document.body.classList.remove('using-keyboard');
+        });
+        document.body.addEventListener('keydown', (e) => {
+          if (e.key === 'Tab' || e.key === 'Shift') {
+            document.body.classList.add('using-keyboard');
+          }
+        });
+      }
+      addScore(team) {
+        this.saveHistory();
+        if (team === "A") this.scoreA++;
+        else this.scoreB++;
+        this.updateScores();
+      }
+      subScore(team) {
+        this.saveHistory();
+        if (team === "A") this.scoreA = Math.max(0, this.scoreA -1);
+        else this.scoreB = Math.max(0, this.scoreB -1);
+        this.updateScores();
+      }
+      saveHistory() {
+        this.history.push({
+          scoreA: this.scoreA,
+          scoreB: this.scoreB,
+          serveTeam: this.serveTeam,
+          serveNumber: this.serveNumber
+        });
+        if(this.history.length > 50) this.history.shift(); // Limit undo stack size
+      }
+      undo() {
+        if (this.history.length === 0) return;
+        const last = this.history.pop();
+        this.scoreA = last.scoreA;
+        this.scoreB = last.scoreB;
+        this.serveTeam = last.serveTeam;
+        this.serveNumber = last.serveNumber;
+        this.updateScores();
+        this.updateServeUI();
+      }
+      reset() {
+        this.saveHistory();
+        this.scoreA = 0;
+        this.scoreB = 0;
+        this.serveTeam = "A";
+        this.serveNumber = 1;
+        this.updateScores();
+        this.updateServeUI();
+      }
+      switchServe() {
+        this.saveHistory();
+        if(this.serveTeam === "A") {
+          if(this.serveNumber === 1) this.serveNumber = 2;
+          else {
+            this.serveTeam = "B";
+            this.serveNumber = 1;
+          }
+        } else {
+          if(this.serveNumber === 1) this.serveNumber = 2;
+          else {
+            this.serveTeam = "A";
+            this.serveNumber = 1;
+          }
+        }
+        this.updateServeUI();
+      }
+      setServe(team, number) {
+        this.saveHistory();
+        this.serveTeam = team;
+        this.serveNumber = number;
+        this.updateServeUI();
+      }
+      updateScores() {
+        this.scoreADisplay.textContent = this.scoreA;
+        this.scoreBDisplay.textContent = this.scoreB;
+      }
+      updateServeUI() {
+        const showA1 = this.serveTeam === "A" && this.serveNumber === 1;
+        const showA2 = this.serveTeam === "A" && this.serveNumber === 2;
+        const showB1 = this.serveTeam === "B" && this.serveNumber === 1;
+        const showB2 = this.serveTeam === "B" && this.serveNumber === 2;
 
-})();
+        this.serveBtnA1.style.opacity = showA1 ? "1" : "0.35";
+        this.serveBtnA2.style.opacity = showA2 ? "1" : "0.35";
+        this.serveBtnB1.style.opacity = showB1 ? "1" : "0.35";
+        this.serveBtnB2.style.opacity = showB2 ? "1" : "0.35";
+
+        this.serveBtnA1.disabled = !showA1;
+        this.serveBtnA2.disabled = !showA2;
+        this.serveBtnB1.disabled = !showB1;
+        this.serveBtnB2.disabled = !showB2;
+      }
+      toggleLayout() {
+        if(this.appEl.classList.contains("vertical")) {
+          this.appEl.classList.remove("vertical");
+          this.appEl.classList.add("horizontal");
+        } else {
+          this.appEl.classList.remove("horizontal");
+          this.appEl.classList.add("vertical");
+        }
+      }
+      onFullscreenChange() {
+        const fs = !!document.fullscreenElement;
+        if (fs) {
+          this.appEl.classList.add("fullscreen");
+        } else {
+          this.appEl.classList.remove("fullscreen");
+        }
+      }
+    }
+
+    // Initialize app on DOM ready
+    window.addEventListener("DOMContentLoaded", () => {
+      window.app = new PickleballApp();
+    });
+  })();
 </script>
-
 </body>
 </html>
