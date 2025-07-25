@@ -1,0 +1,35 @@
+<!-- Minimal structure -->
+<div id="summary"></div>
+
+<script>
+  // Initialize Supabase as above
+
+  async function fetchMatch(id) {
+    const { data, error } = await supabase
+      .from('matches')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      document.getElementById('summary').innerText = 'Match not found.';
+      return;
+    }
+
+    const { teamA, teamB, scoreA, scoreB, created_at } = data;
+    document.getElementById('summary').innerHTML = `
+      <h2>${teamA} vs ${teamB}</h2>
+      <p>Score: ${scoreA} - ${scoreB}</p>
+      <p>Saved on: ${new Date(created_at).toLocaleString()}</p>
+    `;
+  }
+
+  // Read id from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const matchId = urlParams.get('id');
+  if (matchId) {
+    fetchMatch(matchId);
+  } else {
+    document.getElementById('summary').innerText = 'No match specified.';
+  }
+</script>
