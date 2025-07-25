@@ -1,749 +1,330 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pickleball Scorer - Dark Sleek</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* Global styles */
-    body, html {
-      margin: 0; padding: 0;
-      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-        Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      background: #121212;
-      color: #eee;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      overflow-x: hidden;
-    }
-    #app {
-      height: 100vh;
-      display: flex;
-      flex-direction: row;
-      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: 1rem;
-      overflow: hidden;
-      margin: 1rem;
-      box-shadow:
-        0 8px 24px rgb(0 0 0 / 0.7),
-        inset 0 0 0 1px rgb(255 255 255 / 0.05);
-    }
-    /* Morph layouts */
-    #app.horizontal {
-      flex-direction: column;
-    }
-    .team-side {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: 1rem;
-      margin: 0.5rem;
-      box-shadow:
-        inset 0 0 40px 3px rgb(255 255 255 / 0.1);
-      cursor: default;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      padding: 2rem;
-    }
-    .team-name {
-      font-size: 3.5rem;
-      font-weight: 900;
-      letter-spacing: 0.02em;
-      margin-bottom: 0.5rem;
-      outline: none;
-      border-radius: 0.75rem;
-      background: transparent;
-      color: #eee;
-      user-select: text;
-      max-width: 12ch;
-      text-align: center;
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      -ms-user-select: text;
-    }
-    .team-name:focus {
-      background: #222;
-      box-shadow: 0 0 10px #0ea5e9aa;
-      outline: none;
-    }
-    .score {
-      font-size: 8rem;
-      font-weight: 900;
-      letter-spacing: 0.05em;
-      user-select: none;
-      margin-bottom: 2rem;
-      text-shadow:
-        0 0 8px rgba(14, 165, 233, 0.6),
-        0 0 12px rgba(14, 165, 233, 0.4);
-    }
-    .btn-group {
-      display: flex;
-      gap: 1.5rem;
-      user-select: none;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pickleball Scorer</title>
+<style>
+  /* Global resets */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  html, body {
+    margin: 0; padding: 0; height: 100%; overflow: hidden; user-select: none;
+    background: #121212;
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  body > #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    transition: flex-direction 0.5s ease;
+    min-height: 0;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  /* Morph effect for layout change */
+  body.horizontal #app {
+    flex-direction: row;
+  }
+  body.vertical #app {
+    flex-direction: column;
+  }
+  .side {
+    flex: 1 1 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    transition: background-color 0.5s ease;
+    border-radius: 1rem;
+    margin: 0.5rem;
+    user-select: none;
+    position: relative;
+  }
+  h1 {
+    font-size: 6rem;
+    margin: 0.5rem 0;
+    user-select: none;
+  }
+  /* Buttons */
+  button {
+    font-size: 3.5rem !important;
+    padding: 1.5rem 3rem !important;
+    border-radius: 1.5rem !important;
+    min-width: 90px !important;
+    cursor: pointer;
+    border: none;
+    background-color: #1f2937;
+    color: #eee;
+    margin: 0 0.5rem;
+    transition: background-color 0.3s ease;
+    user-select: none;
+    font-weight: 700;
+  }
+  button:hover {
+    background-color: #374151;
+  }
+  /* Container for buttons */
+  .controls {
+    margin-top: 1rem;
+  }
+  /* Color picker dropper container bottom right */
+  .color-dropper {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .color-dropper svg {
+    width: 32px;
+    height: 32px;
+    fill: #eee;
+    transition: fill 0.3s ease;
+  }
+  .color-dropper:hover svg {
+    fill: #3b82f6; /* bright blue */
+  }
+  /* Color picker popup - placeholder for your custom color picker */
+  .color-picker-popup {
+    position: absolute;
+    bottom: 4rem;
+    right: 1rem;
+    background: #1e293b;
+    padding: 1rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 15px #3b82f6aa;
+    display: none;
+    user-select: none;
+    z-index: 100;
+    width: 200px;
+  }
+  /* Layout switcher */
+  #layoutSwitcher {
+    position: fixed;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    border: none;
+    color: #eee;
+    font-size: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: 0 0 8px #3b82f6aa;
+    transition: background-color 0.3s ease;
+    z-index: 200;
+  }
+  #layoutSwitcher:hover {
+    background: #3b82f6;
+  }
+  /* Responsive */
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 4rem;
     }
     button {
-      user-select: none;
-      background: #0ea5e9;
-      border: none;
-      padding: 1rem 2.5rem;
-      font-weight: 700;
-      font-size: 1.5rem;
-      color: #111;
-      border-radius: 1.25rem;
-      box-shadow:
-        0 8px 16px rgb(14 165 233 / 0.5);
-      transition: background-color 0.3s ease;
-      cursor: pointer;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
+      font-size: 2.5rem !important;
+      padding: 1rem 2rem !important;
+      min-width: 80px !important;
+      margin: 0.3rem 0.5rem;
     }
-    button:hover, button:focus {
-      background: #0284c7;
-      outline: none;
+    .color-picker-popup {
+      width: 160px;
+      bottom: 5rem;
+      right: 0.5rem;
+      padding: 0.5rem;
     }
-    button:active {
-      transform: scale(0.95);
+  }
+  /* Intro Overlay */
+  #loadingOverlay {
+    position: fixed;
+    inset: 0;
+    background: #121212;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 3000;
+    user-select: none;
+  }
+  #pickleballContainer {
+    text-align: center;
+    color: #3b82f6;
+  }
+  /* Pickleball bounce & fade in */
+  #pickleball {
+    font-size: 8rem;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards, bounce 2.5s ease-in-out infinite;
+    filter: none;
+  }
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(30px); }
+  }
+  /* Progress bar container */
+  #progressBarContainer {
+    width: 300px;
+    height: 8px;
+    background: #2c3e50;
+    border-radius: 10px;
+    margin: 1rem auto 0;
+    overflow: hidden;
+    box-shadow: 0 0 10px #3b82f6aa inset;
+  }
+  #progressBar {
+    height: 100%;
+    width: 0%;
+    background: #3b82f6;
+    border-radius: 10px 0 0 10px;
+    transition: width 0.3s ease;
+  }
+  #progressPercent {
+    margin-top: 0.5rem;
+    font-size: 1.25rem;
+    color: #3b82f6;
+    font-weight: 600;
+    user-select: none;
+  }
+  /* Blur and fade out */
+  .blurFadeOut {
+    animation: blurFade 1s forwards;
+  }
+  @keyframes blurFade {
+    0% {
+      filter: blur(0);
+      opacity: 1;
     }
-    /* Color picker button */
-    .color-btn {
-      position: absolute;
-      bottom: 1.25rem;
-      right: 1.25rem;
-      background: rgba(255 255 255 / 0.15);
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      box-shadow:
-        0 0 10px rgba(255 255 255 / 0.15);
-      user-select: none;
-    }
-    .color-btn:hover {
-      background: rgba(255 255 255 / 0.3);
-    }
-    /* Color picker panel */
-    .picker-panel {
-      position: absolute;
-      bottom: 70px;
-      right: 10px;
-      width: 280px;
-      background: rgba(255 255 255 / 0.12);
-      backdrop-filter: blur(18px);
-      border-radius: 1rem;
-      padding: 1rem 1.5rem 1.5rem 1.5rem;
-      box-shadow:
-        0 0 30px rgba(14, 165, 233, 0.4);
-      user-select: none;
-      z-index: 20;
+    100% {
+      filter: blur(5px);
       opacity: 0;
       pointer-events: none;
-      transform: scale(0.85);
-      transition:
-        opacity 0.3s ease,
-        transform 0.3s ease;
     }
-    .picker-panel.open {
-      opacity: 1;
-      pointer-events: auto;
-      transform: scale(1);
-    }
-    /* Hue slider */
-    .hue-slider {
-      position: relative;
-      width: 100%;
-      height: 18px;
-      border-radius: 0.75rem;
-      margin-bottom: 1rem;
-      background: linear-gradient(to right,
-        #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
-      cursor: pointer;
-    }
-    .hue-thumb {
-      position: absolute;
-      top: 50%;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: 3px solid white;
-      background: black;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 6px rgba(255,255,255,0.8);
-      cursor: pointer;
-      user-select: none;
-      touch-action: none;
-    }
-    /* Saturation-Lightness square */
-    .sl-picker {
-      position: relative;
-      width: 100%;
-      height: 160px;
-      border-radius: 1rem;
-      cursor: crosshair;
-      background: red;
-      margin-bottom: 1rem;
-      user-select: none;
-    }
-    .sl-white-gradient {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(to right, #fff, rgba(255,255,255,0));
-      border-radius: 1rem;
-      pointer-events: none;
-    }
-    .sl-black-gradient {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(to top, #000, rgba(0,0,0,0));
-      border-radius: 1rem;
-      pointer-events: none;
-    }
-    .sl-cursor {
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: 3px solid white;
-      box-shadow: 0 0 10px #0ea5e9;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
-    /* Hex input */
-    .hex-input {
-      width: 100%;
-      padding: 0.5rem 1rem;
-      font-size: 1.25rem;
-      font-weight: 600;
-      border-radius: 0.75rem;
-      border: none;
-      background: rgba(255 255 255 / 0.15);
-      color: white;
-      outline: none;
-      user-select: text;
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      -ms-user-select: text;
-      letter-spacing: 0.05em;
-    }
-    .hex-input::selection {
-      background: #0ea5e9aa;
-    }
-    /* Close button for picker */
-    .picker-close {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.75rem;
-      font-size: 1.5rem;
-      font-weight: 900;
-      cursor: pointer;
-      color: white;
-      user-select: none;
-    }
-    /* Controls bar */
-    #controls {
-      background: #1e1e1e;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-radius: 1rem;
-      margin: 0 1rem 1rem 1rem;
-      box-shadow: 0 4px 30px rgba(0,0,0,0.5);
-      user-select: none;
-    }
-    #controls button {
-      background: #0ea5e9;
-      box-shadow: 0 8px 24px rgb(14 165 233 / 0.7);
-      padding: 0.75rem 2rem;
-      font-size: 1.25rem;
-      font-weight: 700;
-      border-radius: 1.5rem;
-      user-select: none;
-    }
-    #controls button:hover, #controls button:focus {
-      background: #0284c7;
-      outline: none;
-    }
-    #controls button:active {
-      transform: scale(0.95);
-    }
-  </style>
+  }
+</style>
 </head>
-<body>
-  <div id="app" class="vertical" aria-label="Pickleball Scoring App">
-    <!-- Team A Side -->
-    <section id="sideA" class="team-side" tabindex="0" aria-label="Team A scoring side" style="background-color:#0f172a;">
-      <input type="text" aria-label="Team A Name" id="teamAName" class="team-name" maxlength="12" value="Team A" />
-      <div id="scoreA" class="score" aria-live="polite" aria-atomic="true">0</div>
-      <div class="btn-group" role="group" aria-label="Team A score controls">
-        <button id="btnAPlus" aria-label="Increase Team A score">+</button>
-        <button id="btnAMinus" aria-label="Decrease Team A score">−</button>
-      </div>
-      <button aria-label="Open Team A color picker" class="color-btn" id="colorBtnA" title="Change Team A background color">🎨</button>
-      <div class="picker-panel" id="pickerA" aria-hidden="true" role="dialog" aria-modal="true">
-        <div class="picker-close" role="button" tabindex="0" aria-label="Close Team A color picker">&times;</div>
-        <div class="hue-slider" id="hueSliderA" tabindex="0" aria-label="Hue selector"></div>
-        <div class="sl-picker" id="slPickerA" tabindex="0" aria-label="Saturation and lightness selector">
-          <div class="sl-white-gradient"></div>
-          <div class="sl-black-gradient"></div>
-          <div class="sl-cursor" id="slCursorA"></div>
-        </div>
-        <input type="text" id="hexInputA" class="hex-input" aria-label="Hex color input for Team A" maxlength="7" value="#0f172a" />
-      </div>
-    </section>
+<body class="vertical">
+  <button id="layoutSwitcher" aria-label="Switch Layout">Switch Layout</button>
 
-    <!-- Team B Side -->
-    <section id="sideB" class="team-side" tabindex="0" aria-label="Team B scoring side" style="background-color:#581c87;">
-      <input type="text" aria-label="Team B Name" id="teamBName" class="team-name" maxlength="12" value="Team B" />
-      <div id="scoreB" class="score" aria-live="polite" aria-atomic="true">0</div>
-      <div class="btn-group" role="group" aria-label="Team B score controls">
-        <button id="btnBPlus" aria-label="Increase Team B score">+</button>
-        <button id="btnBMinus" aria-label="Decrease Team B score">−</button>
+  <!-- Intro Loading Overlay -->
+  <div id="loadingOverlay">
+    <div id="pickleballContainer">
+      <div id="pickleball">🏓</div>
+      <div id="progressBarContainer">
+        <div id="progressBar"></div>
       </div>
-      <button aria-label="Open Team B color picker" class="color-btn" id="colorBtnB" title="Change Team B background color">🎨</button>
-      <div class="picker-panel" id="pickerB" aria-hidden="true" role="dialog" aria-modal="true">
-        <div class="picker-close" role="button" tabindex="0" aria-label="Close Team B color picker">&times;</div>
-        <div class="hue-slider" id="hueSliderB" tabindex="0" aria-label="Hue selector"></div>
-        <div class="sl-picker" id="slPickerB" tabindex="0" aria-label="Saturation and lightness selector">
-          <div class="sl-white-gradient"></div>
-          <div class="sl-black-gradient"></div>
-          <div class="sl-cursor" id="slCursorB"></div>
-        </div>
-        <input type="text" id="hexInputB" class="hex-input" aria-label="Hex color input for Team B" maxlength="7" value="#581c87" />
-      </div>
-    </section>
-  </div>
-
-  <div id="controls" role="region" aria-label="Scoring controls">
-    <div>
-      <button id="undoBtn" aria-label="Undo last score change">Undo</button>
-      <button id="resetBtn" aria-label="Reset scores">Reset</button>
-      <button id="switchServeBtn" aria-label="Switch serve">Switch Serve</button>
-    </div>
-    <div>
-      <button id="toggleLayoutBtn" aria-label="Toggle layout orientation">Toggle Layout</button>
+      <div id="progressPercent">0%</div>
     </div>
   </div>
 
-  <script>
-    (() => {
-      'use strict';
+  <!-- Main App -->
+  <div id="app" class="vertical" style="opacity:0; pointer-events:none;">
+    <div class="side" id="sideA" style="background:#1f2937;">
+      <h1 id="scoreA">0</h1>
+      <div class="controls">
+        <button id="btnAPlus" aria-label="Increase Score A">+</button>
+        <button id="btnAMinus" aria-label="Decrease Score A">−</button>
+      </div>
+      <div class="color-dropper" id="colorDropperA" title="Change background color A">
+        <svg viewBox="0 0 24 24"><path d="M19.7 4.3a1 1 0 0 0-1.4 0l-1.2 1.2-2.1-2.1a1 1 0 0 0-1.4 0l-7.8 7.8a2 2 0 0 0-.6 1.4v3.4a1 1 0 0 0 1 1h3.4a2 2 0 0 0 1.4-.6l7.8-7.8a1 1 0 0 0 0-1.4l-2.1-2.1 1.2-1.2a1 1 0 0 0 0-1.4z"/></svg>
+      </div>
+      <!-- Placeholder for custom color picker popup -->
+      <div class="color-picker-popup" id="colorPickerA"></div>
+    </div>
 
-      // Util functions for color conversions
-      function hslToRgb(h, s, l) {
-        h /= 360; s /= 100; l /= 100;
-        let r, g, b;
-        if (s === 0) r = g = b = l;
-        else {
-          const hue2rgb = (p, q, t) => {
-            if (t < 0) t += 1;
-            if (t > 1) t -= 1;
-            if (t < 1/6) return p + (q - p) * 6 * t;
-            if (t < 1/2) return q;
-            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-            return p;
-          };
-          const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-          const p = 2 * l - q;
-          r = hue2rgb(p, q, h + 1/3);
-          g = hue2rgb(p, q, h);
-          b = hue2rgb(p, q, h - 1/3);
-        }
-        return {
-          r: Math.round(r * 255),
-          g: Math.round(g * 255),
-          b: Math.round(b * 255)
-        };
+    <div class="side" id="sideB" style="background:#1f2937;">
+      <h1 id="scoreB">0</h1>
+      <div class="controls">
+        <button id="btnBPlus" aria-label="Increase Score B">+</button>
+        <button id="btnBMinus" aria-label="Decrease Score B">−</button>
+      </div>
+      <div class="color-dropper" id="colorDropperB" title="Change background color B">
+        <svg viewBox="0 0 24 24"><path d="M19.7 4.3a1 1 0 0 0-1.4 0l-1.2 1.2-2.1-2.1a1 1 0 0 0-1.4 0l-7.8 7.8a2 2 0 0 0-.6 1.4v3.4a1 1 0 0 0 1 1h3.4a2 2 0 0 0 1.4-.6l7.8-7.8a1 1 0 0 0 0-1.4l-2.1-2.1 1.2-1.2a1 1 0 0 0 0-1.4z"/></svg>
+      </div>
+      <!-- Placeholder for custom color picker popup -->
+      <div class="color-picker-popup" id="colorPickerB"></div>
+    </div>
+  </div>
+
+<script>
+  // Intro loading animation and app reveal
+  window.addEventListener('load', () => {
+    const progressBar = document.getElementById('progressBar');
+    const progressPercent = document.getElementById('progressPercent');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const pickleball = document.getElementById('pickleball');
+    const app = document.getElementById('app');
+
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 1 + Math.random()*2; // simulate variable loading speed
+      if (progress > 100) progress = 100;
+      progressBar.style.width = progress + '%';
+      progressPercent.textContent = Math.floor(progress) + '%';
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        // Blur and fade out overlay elements
+        pickleball.classList.add('blurFadeOut');
+        progressBar.parentElement.classList.add('blurFadeOut');
+        progressPercent.classList.add('blurFadeOut');
+        // After animation, hide overlay and reveal app
+        setTimeout(() => {
+          loadingOverlay.style.display = 'none';
+          app.style.opacity = '1';
+          app.style.pointerEvents = 'auto';
+        }, 1000);
       }
-      function rgbToHex(r, g, b) {
-        return '#' + [r,g,b].map(x => x.toString(16).padStart(2, '0')).join('');
-      }
-      function hexToRgb(hex) {
-        if(!hex) return null;
-        const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
-        return m ? {
-          r: parseInt(m[1], 16),
-          g: parseInt(m[2], 16),
-          b: parseInt(m[3], 16)
-        } : null;
-      }
-      function rgbToHsl(r, g, b) {
-        r /= 255; g /= 255; b /= 255;
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        let h = 0, s = 0, l = (max + min) / 2;
-        if (max !== min) {
-          const d = max - min;
-          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-          switch(max){
-            case r: h = ((g - b) / d + (g < b ? 6 : 0)); break;
-            case g: h = ((b - r) / d + 2); break;
-            case b: h = ((r - g) / d + 4); break;
-          }
-          h *= 60;
-        }
-        return {h, s: s*100, l: l*100};
-      }
+    }, 50);
 
-      // Haptic tick helper
-      function hapticTick() {
-        if(navigator.vibrate) navigator.vibrate(15);
-      }
+    // Initially disable interaction with app until loaded
+    app.style.pointerEvents = 'none';
+  });
 
-      // Elements
-      const app = document.getElementById('app');
-      const sideA = document.getElementById('sideA');
-      const sideB = document.getElementById('sideB');
+  // Basic scoring logic
+  document.getElementById('btnAPlus').addEventListener('click', () => {
+    let score = parseInt(document.getElementById('scoreA').textContent);
+    document.getElementById('scoreA').textContent = score + 1;
+  });
+  document.getElementById('btnAMinus').addEventListener('click', () => {
+    let score = parseInt(document.getElementById('scoreA').textContent);
+    if(score > 0) document.getElementById('scoreA').textContent = score - 1;
+  });
+  document.getElementById('btnBPlus').addEventListener('click', () => {
+    let score = parseInt(document.getElementById('scoreB').textContent);
+    document.getElementById('scoreB').textContent = score + 1;
+  });
+  document.getElementById('btnBMinus').addEventListener('click', () => {
+    let score = parseInt(document.getElementById('scoreB').textContent);
+    if(score > 0) document.getElementById('scoreB').textContent = score - 1;
+  });
 
-      const scoreAEl = document.getElementById('scoreA');
-      const scoreBEl = document.getElementById('scoreB');
-
-      const btnAPlus = document.getElementById('btnAPlus');
-      const btnAMinus = document.getElementById('btnAMinus');
-      const btnBPlus = document.getElementById('btnBPlus');
-      const btnBMinus = document.getElementById('btnBMinus');
-
-      const undoBtn = document.getElementById('undoBtn');
-      const resetBtn = document.getElementById('resetBtn');
-      const switchServeBtn = document.getElementById('switchServeBtn');
-      const toggleLayoutBtn = document.getElementById('toggleLayoutBtn');
-
-      const teamANameInput = document.getElementById('teamAName');
-      const teamBNameInput = document.getElementById('teamBName');
-
-      // Color picker elements (A)
-      const colorBtnA = document.getElementById('colorBtnA');
-      const pickerA = document.getElementById('pickerA');
-      const hueSliderA = document.getElementById('hueSliderA');
-      const slPickerA = document.getElementById('slPickerA');
-      const slCursorA = document.getElementById('slCursorA');
-      const hexInputA = document.getElementById('hexInputA');
-      const pickerCloseA = pickerA.querySelector('.picker-close');
-
-      // Color picker elements (B)
-      const colorBtnB = document.getElementById('colorBtnB');
-      const pickerB = document.getElementById('pickerB');
-      const hueSliderB = document.getElementById('hueSliderB');
-      const slPickerB = document.getElementById('slPickerB');
-      const slCursorB = document.getElementById('slCursorB');
-      const hexInputB = document.getElementById('hexInputB');
-      const pickerCloseB = pickerB.querySelector('.picker-close');
-
-      // State
-      let scores = {A:0, B:0};
-      let history = [];
-      let layout = 'vertical'; // or 'horizontal'
-
-      // Colors stored as {h, s, l}
-      let colorA = {h: 230, s: 80, l: 15}; // default #0f172a
-      let colorB = {h: 280, s: 70, l: 30}; // default #581c87
-
-      // Helpers to update UI score
-      function updateScores(){
-        scoreAEl.textContent = scores.A;
-        scoreBEl.textContent = scores.B;
-      }
-
-      // Update side background from HSL
-      function updateSideColors(){
-        const rgbA = hslToRgb(colorA.h, colorA.s, colorA.l);
-        sideA.style.backgroundColor = rgbToHex(rgbA.r, rgbA.g, rgbA.b);
-
-        const rgbB = hslToRgb(colorB.h, colorB.s, colorB.l);
-        sideB.style.backgroundColor = rgbToHex(rgbB.r, rgbB.g, rgbB.b);
-
-        // Update hex input values
-        hexInputA.value = rgbToHex(rgbA.r, rgbA.g, rgbA.b);
-        hexInputB.value = rgbToHex(rgbB.r, rgbB.g, rgbB.b);
-
-        // Update saturation-lightness backgrounds for SL pickers
-        hueSliderA.style.background = `linear-gradient(to right,
-          #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%)`;
-        hueSliderB.style.background = hueSliderA.style.background;
-
-        // SL backgrounds: base color changes with hue
-        slPickerA.style.backgroundColor = rgbToHex(...Object.values(hslToRgb(colorA.h, 100, 50)).map(x=>x));
-        slPickerB.style.backgroundColor = rgbToHex(...Object.values(hslToRgb(colorB.h, 100, 50)).map(x=>x));
-
-        // Update SL cursor positions for each picker
-        updateSlCursor('A');
-        updateSlCursor('B');
-      }
-
-      // Update SL cursor position based on current s,l (0-100)
-      function updateSlCursor(team){
-        const slCursor = team==='A' ? slCursorA : slCursorB;
-        const color = team==='A' ? colorA : colorB;
-        const slPicker = team==='A' ? slPickerA : slPickerB;
-
-        const x = (color.s / 100) * slPicker.clientWidth;
-        const y = ((100 - color.l) / 100) * slPicker.clientHeight;
-        slCursor.style.left = `${x}px`;
-        slCursor.style.top = `${y}px`;
-      }
-
-      // Parse and apply hex input for a team
-      function applyHexInput(team, hex){
-        const rgb = hexToRgb(hex);
-        if(!rgb) return false;
-        const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-        if(team === 'A') {
-          colorA.h = hsl.h; colorA.s = hsl.s; colorA.l = hsl.l;
-        } else {
-          colorB.h = hsl.h; colorB.s = hsl.s; colorB.l = hsl.l;
-        }
-        updateSideColors();
-        saveColors();
-        return true;
-      }
-
-      // Save colors and layout to localStorage
-      function saveColors(){
-        localStorage.setItem('colorA', JSON.stringify(colorA));
-        localStorage.setItem('colorB', JSON.stringify(colorB));
-      }
-      function saveLayout(){
-        localStorage.setItem('layout', layout);
-      }
-      function saveScores(){
-        localStorage.setItem('scores', JSON.stringify(scores));
-      }
-      function saveNames(){
-        localStorage.setItem('teamAName', teamANameInput.value);
-        localStorage.setItem('teamBName', teamBNameInput.value);
-      }
-
-      // Load colors, layout, scores, names from localStorage
-      function loadSettings(){
-        const cA = JSON.parse(localStorage.getItem('colorA'));
-        const cB = JSON.parse(localStorage.getItem('colorB'));
-        if(cA) colorA = cA;
-        if(cB) colorB = cB;
-
-        const l = localStorage.getItem('layout');
-        if(l === 'vertical' || l === 'horizontal') layout = l;
-
-        const s = JSON.parse(localStorage.getItem('scores'));
-        if(s && typeof s.A === 'number' && typeof s.B === 'number') scores = s;
-
-        const nA = localStorage.getItem('teamAName');
-        if(nA) teamANameInput.value = nA;
-
-        const nB = localStorage.getItem('teamBName');
-        if(nB) teamBNameInput.value = nB;
-
-        updateSideColors();
-        updateScores();
-        applyLayout();
-      }
-
-      // Score change with history for undo
-      function changeScore(team, delta) {
-        history.push({...scores});
-        scores[team] = Math.max(0, scores[team] + delta);
-        updateScores();
-        saveScores();
-        hapticTick();
-      }
-      function undoScore(){
-        if(history.length === 0) return;
-        scores = history.pop();
-        updateScores();
-        saveScores();
-      }
-      function resetScore(){
-        history.push({...scores});
-        scores = {A:0, B:0};
-        updateScores();
-        saveScores();
-      }
-
-      // Switch serve placeholder (visual serve logic can be expanded)
-      function switchServe(){
-        alert('Serve switch function not implemented yet.');
-      }
-
-      // Toggle layout and morph animation
-      function applyLayout(){
-        if(layout === 'horizontal'){
-          app.classList.add('horizontal');
-          app.classList.remove('vertical');
-        } else {
-          app.classList.add('vertical');
-          app.classList.remove('horizontal');
-        }
-      }
-      function toggleLayout(){
-        layout = layout === 'vertical' ? 'horizontal' : 'vertical';
-        applyLayout();
-        saveLayout();
-      }
-
-      // --- Color Picker Logic ---
-
-      // Hue slider drag logic
-      function setupHueSlider(hueSlider, colorObj, team) {
-        let dragging = false;
-        function updateHueFromEvent(e) {
-          const rect = hueSlider.getBoundingClientRect();
-          let x = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
-          x = Math.min(Math.max(x - rect.left, 0), rect.width);
-          const hue = (x / rect.width) * 360;
-          colorObj.h = hue;
-          updateSideColors();
-          saveColors();
-          updateSlCursor(team);
-        }
-        hueSlider.addEventListener('mousedown', e => { dragging = true; updateHueFromEvent(e); e.preventDefault(); });
-        document.addEventListener('mouseup', e => { dragging = false; });
-        document.addEventListener('mousemove', e => { if(dragging) { updateHueFromEvent(e); e.preventDefault(); } });
-        hueSlider.addEventListener('touchstart', e => { dragging = true; updateHueFromEvent(e.touches[0]); e.preventDefault(); });
-        document.addEventListener('touchend', e => { dragging = false; });
-        document.addEventListener('touchmove', e => { if(dragging) { updateHueFromEvent(e.touches[0]); e.preventDefault(); } });
-      }
-
-      // Saturation-Lightness picker drag logic
-      function setupSlPicker(slPicker, slCursor, colorObj, team) {
-        let dragging = false;
-        function updateSlFromEvent(e) {
-          const rect = slPicker.getBoundingClientRect();
-          let x = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
-          let y = e.clientY ?? (e.touches ? e.touches[0].clientY : 0);
-          x = Math.min(Math.max(x - rect.left, 0), rect.width);
-          y = Math.min(Math.max(y - rect.top, 0), rect.height);
-          // saturation from left(0) to right(100)
-          colorObj.s = (x / rect.width) * 100;
-          // lightness from bottom(0) to top(100)
-          colorObj.l = 100 - (y / rect.height) * 100;
-          updateSideColors();
-          saveColors();
-          updateSlCursor(team);
-        }
-        slPicker.addEventListener('mousedown', e => { dragging = true; updateSlFromEvent(e); e.preventDefault(); });
-        document.addEventListener('mouseup', e => { dragging = false; });
-        document.addEventListener('mousemove', e => { if(dragging) { updateSlFromEvent(e); e.preventDefault(); } });
-        slPicker.addEventListener('touchstart', e => { dragging = true; updateSlFromEvent(e.touches[0]); e.preventDefault(); });
-        document.addEventListener('touchend', e => { dragging = false; });
-        document.addEventListener('touchmove', e => { if(dragging) { updateSlFromEvent(e.touches[0]); e.preventDefault(); } });
-      }
-
-      // Toggle picker visibility and close others
-      function togglePicker(team) {
-        if(team === 'A') {
-          const open = pickerA.classList.toggle('open');
-          pickerA.setAttribute('aria-hidden', !open);
-          if(open) pickerB.classList.remove('open');
-          pickerB.setAttribute('aria-hidden', 'true');
-        } else {
-          const open = pickerB.classList.toggle('open');
-          pickerB.setAttribute('aria-hidden', !open);
-          if(open) pickerA.classList.remove('open');
-          pickerA.setAttribute('aria-hidden', 'true');
-        }
-      }
-
-      // Close all pickers
-      function closePickers() {
-        pickerA.classList.remove('open');
-        pickerB.classList.remove('open');
-        pickerA.setAttribute('aria-hidden', 'true');
-        pickerB.setAttribute('aria-hidden', 'true');
-      }
-
-      // Setup hex input with validation
-      function setupHexInput(inputEl, team) {
-        inputEl.addEventListener('input', e => {
-          let val = inputEl.value.trim();
-          if(val[0] !== '#') val = '#' + val;
-          if(/^#([0-9A-Fa-f]{6})$/.test(val)){
-            applyHexInput(team, val);
-          }
-        });
-        inputEl.addEventListener('blur', () => {
-          // Reset to current color if invalid
-          if(team==='A') {
-            const rgb = hslToRgb(colorA.h, colorA.s, colorA.l);
-            inputEl.value = rgbToHex(rgb.r, rgb.g, rgb.b);
-          } else {
-            const rgb = hslToRgb(colorB.h, colorB.s, colorB.l);
-            inputEl.value = rgbToHex(rgb.r, rgb.g, rgb.b);
-          }
-        });
-      }
-
-      // Event Listeners setup
-      function setup() {
-        btnAPlus.addEventListener('click', () => changeScore('A', 1));
-        btnAMinus.addEventListener('click', () => changeScore('A', -1));
-        btnBPlus.addEventListener('click', () => changeScore('B', 1));
-        btnBMinus.addEventListener('click', () => changeScore('B', -1));
-
-        undoBtn.addEventListener('click', undoScore);
-        resetBtn.addEventListener('click', resetScore);
-        switchServeBtn.addEventListener('click', switchServe);
-        toggleLayoutBtn.addEventListener('click', () => {
-          toggleLayout();
-          closePickers();
-        });
-
-        teamANameInput.addEventListener('input', saveNames);
-        teamBNameInput.addEventListener('input', saveNames);
-
-        // Color picker toggles
-        colorBtnA.addEventListener('click', e => {
-          e.stopPropagation();
-          togglePicker('A');
-        });
-        colorBtnB.addEventListener('click', e => {
-          e.stopPropagation();
-          togglePicker('B');
-        });
-
-        // Close buttons on pickers
-        pickerCloseA.addEventListener('click', e => {
-          e.stopPropagation();
-          closePickers();
-        });
-        pickerCloseB.addEventListener('click', e => {
-          e.stopPropagation();
-          closePickers();
-        });
-
-        // Click outside closes pickers
-        document.addEventListener('click', () => closePickers());
-
-        // Setup hue sliders
-        setupHueSlider(hueSliderA, colorA, 'A');
-        setupHueSlider(hueSliderB, colorB, 'B');
-
-        // Setup SL pickers
-        setupSlPicker(slPickerA, slCursorA, colorA, 'A');
-        setupSlPicker(slPickerB, slCursorB, colorB, 'B');
-
-        // Setup hex inputs
-        setupHexInput(hexInputA, 'A');
-        setupHexInput(hexInputB, 'B');
-      }
-
-      // Initialize
-      loadSettings();
-      setup();
-
-    })();
-  </script>
+  // Layout switcher
+  const layoutSwitcher = document.getElementById('layoutSwitcher');
+  layoutSwitcher.addEventListener('click', () => {
+    const body = document.body;
+    if(body.classList.contains('vertical')) {
+      body.classList.remove('vertical');
+      body.classList.add('horizontal');
+      document.getElementById('app').classList.remove('vertical');
+      document.getElementById('app').classList.add('horizontal');
+    } else {
+      body.classList.remove('horizontal');
+      body.classList.add('vertical');
+      document.getElementById('app').classList.remove('horizontal');
+      document.getElementById('app').classList.add('vertical');
+    }
+  });
+</script>
 </body>
 </html>
