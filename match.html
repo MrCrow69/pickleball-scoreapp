@@ -29,12 +29,12 @@
   <h2>Loading match summary...</h2>
 
   <script>
-    // Step 1: Initialize Supabase
+    // Initialize Supabase first
     const supabaseUrl = 'https://hrimjsmcsnuforyowtqs.supabase.co'; // Replace with your Supabase project URL
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyaW1qc21jc251Zm9yeW93dHFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM0MjUzNDksImV4cCI6MjA2OTAwMTM0OX0.X1eQF6-kup5YUY_XpccV_7n6Nb8GXgSbAZ5uvGIfEOs'; // Replace with your anon/public key
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Step 2: Fetch match data
+    // Then run the fetch
     async function fetchMatch() {
       const matchId = new URLSearchParams(window.location.search).get('id');
       if (!matchId) {
@@ -50,12 +50,11 @@
 
       if (error || !data) {
         console.error(error);
-        document.body.innerHTML = `<h2>Match not found.</h2>`;
+        document.body.innerHTML = `<h2>Match not found or failed to fetch.</h2>`;
         return;
       }
 
-      // Step 3: Display the data
-      const timeline = Array.isArray(data.timeline)
+      const timelineHTML = Array.isArray(data.timeline)
         ? data.timeline.map(p => `<li>${p.time} – ${p.score}</li>`).join('')
         : '<li>No timeline available</li>';
 
@@ -65,10 +64,11 @@
         <p><strong>Winner:</strong> ${data.winner || 'N/A'}</p>
         <p><strong>Time Elapsed:</strong> ${data.duration || 'Unknown'}</p>
         <h3>Timeline:</h3>
-        <ul>${timeline}</ul>
+        <ul>${timelineHTML}</ul>
       `;
     }
 
+    // Only call this after Supabase has been initialized
     fetchMatch();
   </script>
 </body>
