@@ -1,35 +1,75 @@
-<!-- Minimal structure -->
-<div id="summary"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Match Summary</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f7f9fc;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    h2 { color: #333; }
+    .score {
+      font-size: 1.4em;
+      margin: 10px 0;
+    }
+    ul {
+      padding-left: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Loading match summary...</h2>
 
-<script>
-  // Initialize Supabase as above
+  <script>
+    // Step 1: Initialize Supabase
+    const supabaseUrl = 'https://hrimjsmcsnuforyowtqs.supabase.co'; // Replace with your Supabase project URL
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhyaW1qc21jc251Zm9yeW93dHFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM0MjUzNDksImV4cCI6MjA2OTAwMTM0OX0.X1eQF6-kup5YUY_XpccV_7n6Nb8GXgSbAZ5uvGIfEOs'; // Replace with your anon/public key
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-  async function fetchMatch(id) {
-    const { data, error } = await supabase
-      .from('matches')
-      .select('*')
-      .eq('id', id)
-      .single();
+    // Step 2: Fetch match data
+    async function fetchMatch() {
+      const matchId = new URLSearchParams(window.location.search).get('id');
+      if (!matchId) {
+        document.body.innerHTML = `<h2>Error: No match ID provided.</h2>`;
+        return;
+      }
 
-    if (error) {
-      document.getElementById('summary').innerText = 'Match not found.';
-      return;
+      const { data, error } = await supabase
+        .from('matches')
+        .select('*')
+        .eq('id', matchId)
+        .single();
+
+      if (error || !data) {
+        console.error(error);
+        document.body.innerHTML = `<h2>Match not found.</h2>`;
+        return;
+      }
+
+      // Step 3: Display the data
+      const timeline = Array.isArray(data.timeline)
+        ? data.timeline.map(p => `<li>${p.time} – ${p.score}</li>`).join('')
+        : '<li>No timeline available</li>';
+
+      document.body.innerHTML = `
+        <h2>${data.team_a || 'Team A'} vs ${data.team_b || 'Team B'}</h2>
+        <p class="score"><strong>Final Score:</strong> ${data.score_a} - ${data.score_b}</p>
+        <p><strong>Winner:</strong> ${data.winner || 'N/A'}</p>
+        <p><strong>Time Elapsed:</strong> ${data.duration || 'Unknown'}</p>
+        <h3>Timeline:</h3>
+        <ul>${timeline}</ul>
+      `;
     }
 
-    const { teamA, teamB, scoreA, scoreB, created_at } = data;
-    document.getElementById('summary').innerHTML = `
-      <h2>${teamA} vs ${teamB}</h2>
-      <p>Score: ${scoreA} - ${scoreB}</p>
-      <p>Saved on: ${new Date(created_at).toLocaleString()}</p>
-    `;
-  }
-
-  // Read id from URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const matchId = urlParams.get('id');
-  if (matchId) {
-    fetchMatch(matchId);
-  } else {
-    document.getElementById('summary').innerText = 'No match specified.';
-  }
-</script>
+    fetchMatch();
+  </script>
+</body>
+</html>
