@@ -2,42 +2,41 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pickleball Score App</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pickleball Scorer</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-  <div class="app">
-    <div class="team" id="teamA">
-      <input type="text" id="player1Name" value="Team A" />
-      <div class="score" id="score1">0</div>
-      <div class="server-selector">
-        <label><input type="radio" name="server" value="1" id="serverA" />Server</label>
+<body class="vertical">
+  <button id="layoutSwitcher" aria-label="Switch Layout">Switch Layout</button>
+
+  <div id="app" class="vertical">
+    <div class="side" id="sideA" style="background:#1f2937;">
+      <input id="teamA-name" placeholder="Team A" value="Team A" />
+      <h1 id="scoreA">0</h1>
+      <div class="controls">
+        <button id="btnAPlus" aria-label="Increase Score A">+</button>
+        <button id="btnAMinus" aria-label="Decrease Score A">−</button>
       </div>
-    </div>
-    <div class="team" id="teamB">
-      <input type="text" id="player2Name" value="Team B" />
-      <div class="score" id="score2">0</div>
-      <div class="server-selector">
-        <label><input type="radio" name="server" value="2" id="serverB" />Server</label>
+      <div class="color-dropper" id="colorDropperA" title="Change background color A">
+        🎨
       </div>
-    </div>
-    <div class="controls">
-      <button id="increaseA">+ A</button>
-      <button id="decreaseA">− A</button>
-      <button id="increaseB">+ B</button>
-      <button id="decreaseB">− B</button>
-      <button id="saveMatch">Save Match</button>
-      <button id="showQR">Show QR</button>
+      <div class="color-picker-popup" id="colorPickerA"></div>
     </div>
 
-    <div id="qr-popup" class="qr-popup" style="display: none;">
-      <div id="qrcode"></div>
-      <button id="closeQR">Close</button>
+    <div class="side" id="sideB" style="background:#1f2937;">
+      <input id="teamB-name" placeholder="Team B" value="Team B" />
+      <h1 id="scoreB">0</h1>
+      <div class="controls">
+        <button id="btnBPlus" aria-label="Increase Score B">+</button>
+        <button id="btnBMinus" aria-label="Decrease Score B">−</button>
+      </div>
+      <div class="color-dropper" id="colorDropperB" title="Change background color B">
+        🎨
+      </div>
+      <div class="color-picker-popup" id="colorPickerB"></div>
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="js/script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
