@@ -570,36 +570,7 @@
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
   <script>
-    function generateMatchSummary() {
-  // Customize this based on your actual match state variable names
-  // For example:
-  // let teamA = document.querySelector('#teamANameInput').value || 'Team A';
-  // let teamB = document.querySelector('#teamBNameInput').value || 'Team B';
-  // let scoreA = document.querySelector('#scoreA').innerText || '0';
-  // let scoreB = document.querySelector('#scoreB').innerText || '0';
-
-  // Since vichtml is large, adapt accordingly. Here's a general example:
-  const teamA = document.querySelector('#player1Name')?.value || 'Player 1';
-  const teamB = document.querySelector('#player2Name')?.value || 'Player 2';
-
-  // If you have different selectors for scores, replace accordingly
-  const scoreA = document.querySelector('#score1')?.innerText || '0';
-  const scoreB = document.querySelector('#score2')?.innerText || '0';
-
-  return `${teamA} vs ${teamB}\nScore: ${scoreA} - ${scoreB}`;
-}
-
-document.getElementById('qr-btn').addEventListener('click', () => {
-  const qrDiv = document.getElementById('qrcode');
-  qrDiv.innerHTML = ''; // clear old QR code
-  new QRCode(qrDiv, {
-    text: generateMatchSummary(),
-    width: 200,
-    height: 200,
-  });
-  document.getElementById('qr-popup').style.display = 'block';
-});
-
+    
     (() => {
       // Globals
       const app = document.getElementById('app');
@@ -1070,6 +1041,36 @@ document.getElementById('qr-btn').addEventListener('click', () => {
       pickerCloseB.tabIndex = 0;
 
     })();
+    function generateMatchSummary() {
+  // Customize this based on your actual match state variable names
+  // For example:
+  // let teamA = document.querySelector('#teamANameInput').value || 'Team A';
+  // let teamB = document.querySelector('#teamBNameInput').value || 'Team B';
+  // let scoreA = document.querySelector('#scoreA').innerText || '0';
+  // let scoreB = document.querySelector('#scoreB').innerText || '0';
+
+  // Since vichtml is large, adapt accordingly. Here's a general example:
+  const teamA = document.querySelector('#player1Name')?.value || 'Player 1';
+  const teamB = document.querySelector('#player2Name')?.value || 'Player 2';
+
+  // If you have different selectors for scores, replace accordingly
+  const scoreA = document.querySelector('#score1')?.innerText || '0';
+  const scoreB = document.querySelector('#score2')?.innerText || '0';
+
+  return `${teamA} vs ${teamB}\nScore: ${scoreA} - ${scoreB}`;
+}
+
+document.getElementById('qr-btn').addEventListener('click', () => {
+  const qrDiv = document.getElementById('qrcode');
+  qrDiv.innerHTML = ''; // clear old QR code
+  new QRCode(qrDiv, {
+    text: generateMatchSummary(),
+    width: 200,
+    height: 200,
+  });
+  document.getElementById('qr-popup').style.display = 'block';
+});
+
   </script>
 </body>
 </html>
