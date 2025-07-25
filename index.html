@@ -1,749 +1,459 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pickleball Scorer - Dark Sleek</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* Global styles */
-    body, html {
-      margin: 0; padding: 0;
-      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-        Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      background: #121212;
-      color: #eee;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      overflow-x: hidden;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pickleball Scoreboard v2</title>
+<style>
+  :root {
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --accent: #4ade80;
+    --text: #ffffff;
+    --button-bg: #2d2d2d;
+    --button-hover: #3e3e3e;
+    --success: #22c55e;
+    --error: #ef4444;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+  }
+
+  body, html {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #app {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    width: 90vw;
+    max-width: 1000px;
+    height: 80vh;
+    border-radius: 2rem;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    position: relative;
+  }
+
+  .side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 1.5rem;
+    margin: 1rem;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+  }
+
+  .team-header {
+    width: 100%;
+    text-align: center;
+  }
+
+  .team-name {
+    font-size: 2rem;
+    font-weight: 700;
+    background-color: #292929;
+    border-radius: 1rem;
+    color: var(--accent);
+    text-align: center;
+    padding: 0.3rem 0.6rem;
+    user-select: text;
+    outline: none;
+    border: none;
+    width: 100%;
+    max-width: 12ch;
+    margin: 0 auto;
+    transition: background-color 0.3s;
+  }
+  .team-name:focus {
+    background-color: #444;
+    box-shadow: 0 0 10px var(--accent);
+  }
+
+  .score {
+    font-size: 6rem;
+    font-weight: bold;
+    margin: 1rem 0;
+    color: var(--accent);
+    text-shadow: 0 0 10px var(--accent);
+  }
+
+  .buttons, .server-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+
+  button {
+    font-size: 2.2rem;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 1rem;
+    background-color: var(--button-bg);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.6);
+  }
+
+  button:hover:not(:disabled) {
+    background-color: var(--button-hover);
+    transform: scale(1.05);
+  }
+
+  button:disabled {
+    cursor: default;
+    background-color: #444;
+    color: #888;
+  }
+
+  #controls {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 1rem;
+  }
+
+  #controls button {
+    font-size: 1.4rem;
+    padding: 0.5rem 1.5rem;
+    border-radius: 1rem;
+    background-color: var(--button-bg);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    user-select: none;
+  }
+  #controls button:hover {
+    background-color: var(--button-hover);
+  }
+
+  /* Fullscreen overlay and intro animation */
+  #intro {
+    position: fixed;
+    inset: 0;
+    background-color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+    color: var(--accent);
+    font-weight: 900;
+    z-index: 9999;
+    animation: fadeOut 1s ease forwards;
+    animation-delay: 2s;
+  }
+  @keyframes fadeOut {
+    to {
+      opacity: 0;
+      visibility: hidden;
     }
+  }
+
+  /* Visual feedback on score change */
+  .score.bump {
+    animation: bumpScale 0.25s ease forwards;
+  }
+  @keyframes bumpScale {
+    0% { transform: scale(1); color: var(--accent);}
+    50% { transform: scale(1.3); color: #22c55e; text-shadow: 0 0 20px #22c55e;}
+    100% { transform: scale(1); color: var(--accent);}
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
     #app {
+      flex-direction: column;
       height: 100vh;
-      display: flex;
-      flex-direction: row;
-      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: 1rem;
-      overflow: hidden;
-      margin: 1rem;
-      box-shadow:
-        0 8px 24px rgb(0 0 0 / 0.7),
-        inset 0 0 0 1px rgb(255 255 255 / 0.05);
+      width: 100vw;
+      margin: 0;
+      border-radius: 0;
     }
-    /* Morph layouts */
-    #app.horizontal {
-      flex-direction: column;
-    }
-    .team-side {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: 1rem;
-      margin: 0.5rem;
-      box-shadow:
-        inset 0 0 40px 3px rgb(255 255 255 / 0.1);
-      cursor: default;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      padding: 2rem;
-    }
-    .team-name {
-      font-size: 3.5rem;
-      font-weight: 900;
-      letter-spacing: 0.02em;
-      margin-bottom: 0.5rem;
-      outline: none;
-      border-radius: 0.75rem;
-      background: transparent;
-      color: #eee;
-      user-select: text;
-      max-width: 12ch;
-      text-align: center;
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      -ms-user-select: text;
-    }
-    .team-name:focus {
-      background: #222;
-      box-shadow: 0 0 10px #0ea5e9aa;
-      outline: none;
+    .side {
+      margin: 0.5rem 0;
+      height: 45vh;
     }
     .score {
-      font-size: 8rem;
-      font-weight: 900;
-      letter-spacing: 0.05em;
-      user-select: none;
-      margin-bottom: 2rem;
-      text-shadow:
-        0 0 8px rgba(14, 165, 233, 0.6),
-        0 0 12px rgba(14, 165, 233, 0.4);
-    }
-    .btn-group {
-      display: flex;
-      gap: 1.5rem;
-      user-select: none;
+      font-size: 4rem;
     }
     button {
-      user-select: none;
-      background: #0ea5e9;
-      border: none;
-      padding: 1rem 2.5rem;
-      font-weight: 700;
-      font-size: 1.5rem;
-      color: #111;
-      border-radius: 1.25rem;
-      box-shadow:
-        0 8px 16px rgb(14 165 233 / 0.5);
-      transition: background-color 0.3s ease;
-      cursor: pointer;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
+      font-size: 1.8rem;
+      padding: 0.8rem 1.5rem;
     }
-    button:hover, button:focus {
-      background: #0284c7;
-      outline: none;
-    }
-    button:active {
-      transform: scale(0.95);
-    }
-    /* Color picker button */
-    .color-btn {
-      position: absolute;
-      bottom: 1.25rem;
-      right: 1.25rem;
-      background: rgba(255 255 255 / 0.15);
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      box-shadow:
-        0 0 10px rgba(255 255 255 / 0.15);
-      user-select: none;
-    }
-    .color-btn:hover {
-      background: rgba(255 255 255 / 0.3);
-    }
-    /* Color picker panel */
-    .picker-panel {
-      position: absolute;
-      bottom: 70px;
-      right: 10px;
-      width: 280px;
-      background: rgba(255 255 255 / 0.12);
-      backdrop-filter: blur(18px);
-      border-radius: 1rem;
-      padding: 1rem 1.5rem 1.5rem 1.5rem;
-      box-shadow:
-        0 0 30px rgba(14, 165, 233, 0.4);
-      user-select: none;
-      z-index: 20;
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(0.85);
-      transition:
-        opacity 0.3s ease,
-        transform 0.3s ease;
-    }
-    .picker-panel.open {
-      opacity: 1;
-      pointer-events: auto;
-      transform: scale(1);
-    }
-    /* Hue slider */
-    .hue-slider {
-      position: relative;
-      width: 100%;
-      height: 18px;
-      border-radius: 0.75rem;
-      margin-bottom: 1rem;
-      background: linear-gradient(to right,
-        #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%);
-      cursor: pointer;
-    }
-    .hue-thumb {
-      position: absolute;
-      top: 50%;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: 3px solid white;
-      background: black;
-      transform: translate(-50%, -50%);
-      box-shadow: 0 0 6px rgba(255,255,255,0.8);
-      cursor: pointer;
-      user-select: none;
-      touch-action: none;
-    }
-    /* Saturation-Lightness square */
-    .sl-picker {
-      position: relative;
-      width: 100%;
-      height: 160px;
-      border-radius: 1rem;
-      cursor: crosshair;
-      background: red;
-      margin-bottom: 1rem;
-      user-select: none;
-    }
-    .sl-white-gradient {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(to right, #fff, rgba(255,255,255,0));
-      border-radius: 1rem;
-      pointer-events: none;
-    }
-    .sl-black-gradient {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(to top, #000, rgba(0,0,0,0));
-      border-radius: 1rem;
-      pointer-events: none;
-    }
-    .sl-cursor {
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: 3px solid white;
-      box-shadow: 0 0 10px #0ea5e9;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
-    /* Hex input */
-    .hex-input {
-      width: 100%;
-      padding: 0.5rem 1rem;
-      font-size: 1.25rem;
-      font-weight: 600;
-      border-radius: 0.75rem;
-      border: none;
-      background: rgba(255 255 255 / 0.15);
-      color: white;
-      outline: none;
-      user-select: text;
-      -webkit-user-select: text;
-      -moz-user-select: text;
-      -ms-user-select: text;
-      letter-spacing: 0.05em;
-    }
-    .hex-input::selection {
-      background: #0ea5e9aa;
-    }
-    /* Close button for picker */
-    .picker-close {
-      position: absolute;
-      top: 0.5rem;
-      right: 0.75rem;
-      font-size: 1.5rem;
-      font-weight: 900;
-      cursor: pointer;
-      color: white;
-      user-select: none;
-    }
-    /* Controls bar */
     #controls {
-      background: #1e1e1e;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-radius: 1rem;
-      margin: 0 1rem 1rem 1rem;
-      box-shadow: 0 4px 30px rgba(0,0,0,0.5);
-      user-select: none;
+      bottom: 0.5rem;
+      flex-wrap: wrap;
+      width: 90vw;
+      left: 50%;
+      transform: translateX(-50%);
     }
-    #controls button {
-      background: #0ea5e9;
-      box-shadow: 0 8px 24px rgb(14 165 233 / 0.7);
-      padding: 0.75rem 2rem;
-      font-size: 1.25rem;
-      font-weight: 700;
-      border-radius: 1.5rem;
-      user-select: none;
-    }
-    #controls button:hover, #controls button:focus {
-      background: #0284c7;
-      outline: none;
-    }
-    #controls button:active {
-      transform: scale(0.95);
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div id="app" class="vertical" aria-label="Pickleball Scoring App">
-    <!-- Team A Side -->
-    <section id="sideA" class="team-side" tabindex="0" aria-label="Team A scoring side" style="background-color:#0f172a;">
-      <input type="text" aria-label="Team A Name" id="teamAName" class="team-name" maxlength="12" value="Team A" />
-      <div id="scoreA" class="score" aria-live="polite" aria-atomic="true">0</div>
-      <div class="btn-group" role="group" aria-label="Team A score controls">
-        <button id="btnAPlus" aria-label="Increase Team A score">+</button>
-        <button id="btnAMinus" aria-label="Decrease Team A score">−</button>
-      </div>
-      <button aria-label="Open Team A color picker" class="color-btn" id="colorBtnA" title="Change Team A background color">🎨</button>
-      <div class="picker-panel" id="pickerA" aria-hidden="true" role="dialog" aria-modal="true">
-        <div class="picker-close" role="button" tabindex="0" aria-label="Close Team A color picker">&times;</div>
-        <div class="hue-slider" id="hueSliderA" tabindex="0" aria-label="Hue selector"></div>
-        <div class="sl-picker" id="slPickerA" tabindex="0" aria-label="Saturation and lightness selector">
-          <div class="sl-white-gradient"></div>
-          <div class="sl-black-gradient"></div>
-          <div class="sl-cursor" id="slCursorA"></div>
-        </div>
-        <input type="text" id="hexInputA" class="hex-input" aria-label="Hex color input for Team A" maxlength="7" value="#0f172a" />
-      </div>
-    </section>
 
-    <!-- Team B Side -->
-    <section id="sideB" class="team-side" tabindex="0" aria-label="Team B scoring side" style="background-color:#581c87;">
-      <input type="text" aria-label="Team B Name" id="teamBName" class="team-name" maxlength="12" value="Team B" />
-      <div id="scoreB" class="score" aria-live="polite" aria-atomic="true">0</div>
-      <div class="btn-group" role="group" aria-label="Team B score controls">
-        <button id="btnBPlus" aria-label="Increase Team B score">+</button>
-        <button id="btnBMinus" aria-label="Decrease Team B score">−</button>
-      </div>
-      <button aria-label="Open Team B color picker" class="color-btn" id="colorBtnB" title="Change Team B background color">🎨</button>
-      <div class="picker-panel" id="pickerB" aria-hidden="true" role="dialog" aria-modal="true">
-        <div class="picker-close" role="button" tabindex="0" aria-label="Close Team B color picker">&times;</div>
-        <div class="hue-slider" id="hueSliderB" tabindex="0" aria-label="Hue selector"></div>
-        <div class="sl-picker" id="slPickerB" tabindex="0" aria-label="Saturation and lightness selector">
-          <div class="sl-white-gradient"></div>
-          <div class="sl-black-gradient"></div>
-          <div class="sl-cursor" id="slCursorB"></div>
-        </div>
-        <input type="text" id="hexInputB" class="hex-input" aria-label="Hex color input for Team B" maxlength="7" value="#581c87" />
-      </div>
-    </section>
-  </div>
+<div id="intro">Pickleball Score</div>
 
-  <div id="controls" role="region" aria-label="Scoring controls">
-    <div>
-      <button id="undoBtn" aria-label="Undo last score change">Undo</button>
-      <button id="resetBtn" aria-label="Reset scores">Reset</button>
-      <button id="switchServeBtn" aria-label="Switch serve">Switch Serve</button>
+<div id="app" tabindex="0" aria-label="Pickleball scoring app">
+  <section class="side" id="teamA" aria-label="Team A side">
+    <header class="team-header">
+      <input aria-label="Team A name" id="teamAName" class="team-name" maxlength="12" spellcheck="false" value="Team A" />
+    </header>
+    <div class="score" id="scoreA" aria-live="polite" aria-atomic="true">0</div>
+    <div class="buttons" role="group" aria-label="Team A score controls">
+      <button id="btnAPlus" aria-label="Increase Team A score">+</button>
+      <button id="btnAMinus" aria-label="Decrease Team A score">−</button>
     </div>
-    <div>
-      <button id="toggleLayoutBtn" aria-label="Toggle layout orientation">Toggle Layout</button>
+    <div class="server-buttons" role="group" aria-label="Team A server controls" style="margin-top: 1.5rem;">
+      <button id="server1A" aria-label="Set Server 1 for Team A">Server 1</button>
+      <button id="server2A" aria-label="Set Server 2 for Team A">Server 2</button>
     </div>
-  </div>
+  </section>
 
-  <script>
-    (() => {
-      'use strict';
+  <section class="side" id="teamB" aria-label="Team B side">
+    <header class="team-header">
+      <input aria-label="Team B name" id="teamBName" class="team-name" maxlength="12" spellcheck="false" value="Team B" />
+    </header>
+    <div class="score" id="scoreB" aria-live="polite" aria-atomic="true">0</div>
+    <div class="buttons" role="group" aria-label="Team B score controls">
+      <button id="btnBPlus" aria-label="Increase Team B score">+</button>
+      <button id="btnBMinus" aria-label="Decrease Team B score">−</button>
+    </div>
+    <div class="server-buttons" role="group" aria-label="Team B server controls" style="margin-top: 1.5rem;">
+      <button id="server1B" aria-label="Set Server 1 for Team B">Server 1</button>
+      <button id="server2B" aria-label="Set Server 2 for Team B">Server 2</button>
+    </div>
+  </section>
+</div>
 
-      // Util functions for color conversions
-      function hslToRgb(h, s, l) {
-        h /= 360; s /= 100; l /= 100;
-        let r, g, b;
-        if (s === 0) r = g = b = l;
-        else {
-          const hue2rgb = (p, q, t) => {
-            if (t < 0) t += 1;
-            if (t > 1) t -= 1;
-            if (t < 1/6) return p + (q - p) * 6 * t;
-            if (t < 1/2) return q;
-            if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
-            return p;
-          };
-          const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-          const p = 2 * l - q;
-          r = hue2rgb(p, q, h + 1/3);
-          g = hue2rgb(p, q, h);
-          b = hue2rgb(p, q, h - 1/3);
-        }
-        return {
-          r: Math.round(r * 255),
-          g: Math.round(g * 255),
-          b: Math.round(b * 255)
-        };
-      }
-      function rgbToHex(r, g, b) {
-        return '#' + [r,g,b].map(x => x.toString(16).padStart(2, '0')).join('');
-      }
-      function hexToRgb(hex) {
-        if(!hex) return null;
-        const m = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
-        return m ? {
-          r: parseInt(m[1], 16),
-          g: parseInt(m[2], 16),
-          b: parseInt(m[3], 16)
-        } : null;
-      }
-      function rgbToHsl(r, g, b) {
-        r /= 255; g /= 255; b /= 255;
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        let h = 0, s = 0, l = (max + min) / 2;
-        if (max !== min) {
-          const d = max - min;
-          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-          switch(max){
-            case r: h = ((g - b) / d + (g < b ? 6 : 0)); break;
-            case g: h = ((b - r) / d + 2); break;
-            case b: h = ((r - g) / d + 4); break;
-          }
-          h *= 60;
-        }
-        return {h, s: s*100, l: l*100};
-      }
+<div id="controls" role="region" aria-label="App controls">
+  <button id="undoBtn" aria-label="Undo last score change">Undo</button>
+  <button id="resetBtn" aria-label="Reset scores">Reset</button>
+  <button id="fullscreenBtn" aria-label="Toggle fullscreen mode">Fullscreen</button>
+</div>
 
-      // Haptic tick helper
-      function hapticTick() {
-        if(navigator.vibrate) navigator.vibrate(15);
-      }
+<script>
+(() => {
+  'use strict';
 
-      // Elements
-      const app = document.getElementById('app');
-      const sideA = document.getElementById('sideA');
-      const sideB = document.getElementById('sideB');
+  // Variables for state
+  let scores = { A: 0, B: 0 };
+  let history = [];
+  let server = { A: null, B: null }; // can be 1 or 2
+  let teamNames = { A: 'Team A', B: 'Team B' };
+  const scoreLimit = 11;
 
-      const scoreAEl = document.getElementById('scoreA');
-      const scoreBEl = document.getElementById('scoreB');
+  // Elements
+  const scoreAEl = document.getElementById('scoreA');
+  const scoreBEl = document.getElementById('scoreB');
+  const teamANameEl = document.getElementById('teamAName');
+  const teamBNameEl = document.getElementById('teamBName');
 
-      const btnAPlus = document.getElementById('btnAPlus');
-      const btnAMinus = document.getElementById('btnAMinus');
-      const btnBPlus = document.getElementById('btnBPlus');
-      const btnBMinus = document.getElementById('btnBMinus');
+  const btnAPlus = document.getElementById('btnAPlus');
+  const btnAMinus = document.getElementById('btnAMinus');
+  const btnBPlus = document.getElementById('btnBPlus');
+  const btnBMinus = document.getElementById('btnBMinus');
 
-      const undoBtn = document.getElementById('undoBtn');
-      const resetBtn = document.getElementById('resetBtn');
-      const switchServeBtn = document.getElementById('switchServeBtn');
-      const toggleLayoutBtn = document.getElementById('toggleLayoutBtn');
+  const undoBtn = document.getElementById('undoBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
 
-      const teamANameInput = document.getElementById('teamAName');
-      const teamBNameInput = document.getElementById('teamBName');
+  const server1A = document.getElementById('server1A');
+  const server2A = document.getElementById('server2A');
+  const server1B = document.getElementById('server1B');
+  const server2B = document.getElementById('server2B');
 
-      // Color picker elements (A)
-      const colorBtnA = document.getElementById('colorBtnA');
-      const pickerA = document.getElementById('pickerA');
-      const hueSliderA = document.getElementById('hueSliderA');
-      const slPickerA = document.getElementById('slPickerA');
-      const slCursorA = document.getElementById('slCursorA');
-      const hexInputA = document.getElementById('hexInputA');
-      const pickerCloseA = pickerA.querySelector('.picker-close');
+  const intro = document.getElementById('intro');
+  const app = document.getElementById('app');
 
-      // Color picker elements (B)
-      const colorBtnB = document.getElementById('colorBtnB');
-      const pickerB = document.getElementById('pickerB');
-      const hueSliderB = document.getElementById('hueSliderB');
-      const slPickerB = document.getElementById('slPickerB');
-      const slCursorB = document.getElementById('slCursorB');
-      const hexInputB = document.getElementById('hexInputB');
-      const pickerCloseB = pickerB.querySelector('.picker-close');
+  // Utility functions
+  function saveState() {
+    localStorage.setItem('scores', JSON.stringify(scores));
+    localStorage.setItem('history', JSON.stringify(history));
+    localStorage.setItem('servers', JSON.stringify(server));
+    localStorage.setItem('teamNames', JSON.stringify(teamNames));
+  }
 
-      // State
-      let scores = {A:0, B:0};
-      let history = [];
-      let layout = 'vertical'; // or 'horizontal'
+  function loadState() {
+    const s = JSON.parse(localStorage.getItem('scores'));
+    if(s && typeof s.A === 'number' && typeof s.B === 'number') scores = s;
+    const h = JSON.parse(localStorage.getItem('history'));
+    if(Array.isArray(h)) history = h;
+    const serv = JSON.parse(localStorage.getItem('servers'));
+    if(serv) server = serv;
+    const tNames = JSON.parse(localStorage.getItem('teamNames'));
+    if(tNames) {
+      teamNames = tNames;
+      teamANameEl.value = teamNames.A;
+      teamBNameEl.value = teamNames.B;
+    }
+  }
 
-      // Colors stored as {h, s, l}
-      let colorA = {h: 230, s: 80, l: 15}; // default #0f172a
-      let colorB = {h: 280, s: 70, l: 30}; // default #581c87
+  function updateScoreUI() {
+    scoreAEl.textContent = scores.A;
+    scoreBEl.textContent = scores.B;
+  }
 
-      // Helpers to update UI score
-      function updateScores(){
-        scoreAEl.textContent = scores.A;
-        scoreBEl.textContent = scores.B;
-      }
+  function updateServerUI() {
+    // Clear all server button highlights first
+    [server1A, server2A, server1B, server2B].forEach(btn => btn.style.backgroundColor = '');
 
-      // Update side background from HSL
-      function updateSideColors(){
-        const rgbA = hslToRgb(colorA.h, colorA.s, colorA.l);
-        sideA.style.backgroundColor = rgbToHex(rgbA.r, rgbA.g, rgbA.b);
+    if(server.A === 1) server1A.style.backgroundColor = 'var(--success)';
+    if(server.A === 2) server2A.style.backgroundColor = 'var(--success)';
+    if(server.B === 1) server1B.style.backgroundColor = 'var(--success)';
+    if(server.B === 2) server2B.style.backgroundColor = 'var(--success)';
+  }
 
-        const rgbB = hslToRgb(colorB.h, colorB.s, colorB.l);
-        sideB.style.backgroundColor = rgbToHex(rgbB.r, rgbB.g, rgbB.b);
+  function updateNamesUI() {
+    teamANameEl.value = teamNames.A;
+    teamBNameEl.value = teamNames.B;
+  }
 
-        // Update hex input values
-        hexInputA.value = rgbToHex(rgbA.r, rgbA.g, rgbA.b);
-        hexInputB.value = rgbToHex(rgbB.r, rgbB.g, rgbB.b);
+  // Score change with history for undo
+  function changeScore(team, delta) {
+    if(delta === 0) return;
+    // Prevent changing if game over
+    if(isGameOver()) return;
 
-        // Update saturation-lightness backgrounds for SL pickers
-        hueSliderA.style.background = `linear-gradient(to right,
-          #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%)`;
-        hueSliderB.style.background = hueSliderA.style.background;
+    // Save current state to history
+    history.push(JSON.stringify(scores));
 
-        // SL backgrounds: base color changes with hue
-        slPickerA.style.backgroundColor = rgbToHex(...Object.values(hslToRgb(colorA.h, 100, 50)).map(x=>x));
-        slPickerB.style.backgroundColor = rgbToHex(...Object.values(hslToRgb(colorB.h, 100, 50)).map(x=>x));
+    if(team === 'A') {
+      scores.A = Math.max(0, scores.A + delta);
+    } else if(team === 'B') {
+      scores.B = Math.max(0, scores.B + delta);
+    }
 
-        // Update SL cursor positions for each picker
-        updateSlCursor('A');
-        updateSlCursor('B');
-      }
+    updateScoreUI();
+    highlightScore(team);
+    saveState();
 
-      // Update SL cursor position based on current s,l (0-100)
-      function updateSlCursor(team){
-        const slCursor = team==='A' ? slCursorA : slCursorB;
-        const color = team==='A' ? colorA : colorB;
-        const slPicker = team==='A' ? slPickerA : slPickerB;
+    if(isGameOver()) {
+      alert(`${teamNames[team]} wins!`);
+      disableScoreButtons(true);
+    }
+  }
 
-        const x = (color.s / 100) * slPicker.clientWidth;
-        const y = ((100 - color.l) / 100) * slPicker.clientHeight;
-        slCursor.style.left = `${x}px`;
-        slCursor.style.top = `${y}px`;
-      }
+  // Undo last score change
+  function undo() {
+    if(history.length === 0) return;
+    const last = history.pop();
+    scores = JSON.parse(last);
+    updateScoreUI();
+    disableScoreButtons(false);
+    saveState();
+  }
 
-      // Parse and apply hex input for a team
-      function applyHexInput(team, hex){
-        const rgb = hexToRgb(hex);
-        if(!rgb) return false;
-        const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
-        if(team === 'A') {
-          colorA.h = hsl.h; colorA.s = hsl.s; colorA.l = hsl.l;
-        } else {
-          colorB.h = hsl.h; colorB.s = hsl.s; colorB.l = hsl.l;
-        }
-        updateSideColors();
-        saveColors();
-        return true;
-      }
+  // Reset scores and state
+  function reset() {
+    if(!confirm('Reset scores and servers?')) return;
+    history = [];
+    scores = { A: 0, B: 0 };
+    server = { A: null, B: null };
+    updateScoreUI();
+    updateServerUI();
+    disableScoreButtons(false);
+    saveState();
+  }
 
-      // Save colors and layout to localStorage
-      function saveColors(){
-        localStorage.setItem('colorA', JSON.stringify(colorA));
-        localStorage.setItem('colorB', JSON.stringify(colorB));
-      }
-      function saveLayout(){
-        localStorage.setItem('layout', layout);
-      }
-      function saveScores(){
-        localStorage.setItem('scores', JSON.stringify(scores));
-      }
-      function saveNames(){
-        localStorage.setItem('teamAName', teamANameInput.value);
-        localStorage.setItem('teamBName', teamBNameInput.value);
-      }
+  // Check if game is over
+  function isGameOver() {
+    return scores.A >= scoreLimit || scores.B >= scoreLimit;
+  }
 
-      // Load colors, layout, scores, names from localStorage
-      function loadSettings(){
-        const cA = JSON.parse(localStorage.getItem('colorA'));
-        const cB = JSON.parse(localStorage.getItem('colorB'));
-        if(cA) colorA = cA;
-        if(cB) colorB = cB;
+  // Disable/enable score buttons on game over
+  function disableScoreButtons(disable) {
+    btnAPlus.disabled = disable;
+    btnAMinus.disabled = disable;
+    btnBPlus.disabled = disable;
+    btnBMinus.disabled = disable;
+  }
 
-        const l = localStorage.getItem('layout');
-        if(l === 'vertical' || l === 'horizontal') layout = l;
+  // Visual score bump effect
+  function highlightScore(team) {
+    const el = team === 'A' ? scoreAEl : scoreBEl;
+    el.classList.remove('bump');
+    void el.offsetWidth; // trigger reflow for restart
+    el.classList.add('bump');
+  }
 
-        const s = JSON.parse(localStorage.getItem('scores'));
-        if(s && typeof s.A === 'number' && typeof s.B === 'number') scores = s;
+  // Set server for team
+  function setServer(team, num) {
+    server[team] = num;
+    updateServerUI();
+    saveState();
+  }
 
-        const nA = localStorage.getItem('teamAName');
-        if(nA) teamANameInput.value = nA;
+  // Fullscreen toggle
+  function toggleFullscreen() {
+    if(!document.fullscreenElement) {
+      app.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen();
+    }
+  }
 
-        const nB = localStorage.getItem('teamBName');
-        if(nB) teamBNameInput.value = nB;
+  // Load saved state on start
+  loadState();
+  updateScoreUI();
+  updateServerUI();
 
-        updateSideColors();
-        updateScores();
-        applyLayout();
-      }
+  // Event Listeners
+  btnAPlus.addEventListener('click', () => changeScore('A', +1));
+  btnAMinus.addEventListener('click', () => changeScore('A', -1));
+  btnBPlus.addEventListener('click', () => changeScore('B', +1));
+  btnBMinus.addEventListener('click', () => changeScore('B', -1));
 
-      // Score change with history for undo
-      function changeScore(team, delta) {
-        history.push({...scores});
-        scores[team] = Math.max(0, scores[team] + delta);
-        updateScores();
-        saveScores();
-        hapticTick();
-      }
-      function undoScore(){
-        if(history.length === 0) return;
-        scores = history.pop();
-        updateScores();
-        saveScores();
-      }
-      function resetScore(){
-        history.push({...scores});
-        scores = {A:0, B:0};
-        updateScores();
-        saveScores();
-      }
+  undoBtn.addEventListener('click', undo);
+  resetBtn.addEventListener('click', reset);
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
 
-      // Switch serve placeholder (visual serve logic can be expanded)
-      function switchServe(){
-        alert('Serve switch function not implemented yet.');
-      }
+  server1A.addEventListener('click', () => setServer('A', 1));
+  server2A.addEventListener('click', () => setServer('A', 2));
+  server1B.addEventListener('click', () => setServer('B', 1));
+  server2B.addEventListener('click', () => setServer('B', 2));
 
-      // Toggle layout and morph animation
-      function applyLayout(){
-        if(layout === 'horizontal'){
-          app.classList.add('horizontal');
-          app.classList.remove('vertical');
-        } else {
-          app.classList.add('vertical');
-          app.classList.remove('horizontal');
-        }
-      }
-      function toggleLayout(){
-        layout = layout === 'vertical' ? 'horizontal' : 'vertical';
-        applyLayout();
-        saveLayout();
-      }
+  // Editable team names with persistence
+  teamANameEl.addEventListener('input', (e) => {
+    teamNames.A = e.target.value.trim() || 'Team A';
+    saveState();
+  });
+  teamBNameEl.addEventListener('input', (e) => {
+    teamNames.B = e.target.value.trim() || 'Team B';
+    saveState();
+  });
 
-      // --- Color Picker Logic ---
+  // Remove intro after animation
+  intro.addEventListener('animationend', () => {
+    intro.style.display = 'none';
+  });
 
-      // Hue slider drag logic
-      function setupHueSlider(hueSlider, colorObj, team) {
-        let dragging = false;
-        function updateHueFromEvent(e) {
-          const rect = hueSlider.getBoundingClientRect();
-          let x = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
-          x = Math.min(Math.max(x - rect.left, 0), rect.width);
-          const hue = (x / rect.width) * 360;
-          colorObj.h = hue;
-          updateSideColors();
-          saveColors();
-          updateSlCursor(team);
-        }
-        hueSlider.addEventListener('mousedown', e => { dragging = true; updateHueFromEvent(e); e.preventDefault(); });
-        document.addEventListener('mouseup', e => { dragging = false; });
-        document.addEventListener('mousemove', e => { if(dragging) { updateHueFromEvent(e); e.preventDefault(); } });
-        hueSlider.addEventListener('touchstart', e => { dragging = true; updateHueFromEvent(e.touches[0]); e.preventDefault(); });
-        document.addEventListener('touchend', e => { dragging = false; });
-        document.addEventListener('touchmove', e => { if(dragging) { updateHueFromEvent(e.touches[0]); e.preventDefault(); } });
-      }
+  // Keyboard shortcuts for accessibility (optional)
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'f' || e.key === 'F') toggleFullscreen();
+    if(e.key === 'r' || e.key === 'R') reset();
+    if(e.key === 'z' && (e.ctrlKey || e.metaKey)) undo();
+  });
 
-      // Saturation-Lightness picker drag logic
-      function setupSlPicker(slPicker, slCursor, colorObj, team) {
-        let dragging = false;
-        function updateSlFromEvent(e) {
-          const rect = slPicker.getBoundingClientRect();
-          let x = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
-          let y = e.clientY ?? (e.touches ? e.touches[0].clientY : 0);
-          x = Math.min(Math.max(x - rect.left, 0), rect.width);
-          y = Math.min(Math.max(y - rect.top, 0), rect.height);
-          // saturation from left(0) to right(100)
-          colorObj.s = (x / rect.width) * 100;
-          // lightness from bottom(0) to top(100)
-          colorObj.l = 100 - (y / rect.height) * 100;
-          updateSideColors();
-          saveColors();
-          updateSlCursor(team);
-        }
-        slPicker.addEventListener('mousedown', e => { dragging = true; updateSlFromEvent(e); e.preventDefault(); });
-        document.addEventListener('mouseup', e => { dragging = false; });
-        document.addEventListener('mousemove', e => { if(dragging) { updateSlFromEvent(e); e.preventDefault(); } });
-        slPicker.addEventListener('touchstart', e => { dragging = true; updateSlFromEvent(e.touches[0]); e.preventDefault(); });
-        document.addEventListener('touchend', e => { dragging = false; });
-        document.addEventListener('touchmove', e => { if(dragging) { updateSlFromEvent(e.touches[0]); e.preventDefault(); } });
-      }
+})();
+</script>
 
-      // Toggle picker visibility and close others
-      function togglePicker(team) {
-        if(team === 'A') {
-          const open = pickerA.classList.toggle('open');
-          pickerA.setAttribute('aria-hidden', !open);
-          if(open) pickerB.classList.remove('open');
-          pickerB.setAttribute('aria-hidden', 'true');
-        } else {
-          const open = pickerB.classList.toggle('open');
-          pickerB.setAttribute('aria-hidden', !open);
-          if(open) pickerA.classList.remove('open');
-          pickerA.setAttribute('aria-hidden', 'true');
-        }
-      }
-
-      // Close all pickers
-      function closePickers() {
-        pickerA.classList.remove('open');
-        pickerB.classList.remove('open');
-        pickerA.setAttribute('aria-hidden', 'true');
-        pickerB.setAttribute('aria-hidden', 'true');
-      }
-
-      // Setup hex input with validation
-      function setupHexInput(inputEl, team) {
-        inputEl.addEventListener('input', e => {
-          let val = inputEl.value.trim();
-          if(val[0] !== '#') val = '#' + val;
-          if(/^#([0-9A-Fa-f]{6})$/.test(val)){
-            applyHexInput(team, val);
-          }
-        });
-        inputEl.addEventListener('blur', () => {
-          // Reset to current color if invalid
-          if(team==='A') {
-            const rgb = hslToRgb(colorA.h, colorA.s, colorA.l);
-            inputEl.value = rgbToHex(rgb.r, rgb.g, rgb.b);
-          } else {
-            const rgb = hslToRgb(colorB.h, colorB.s, colorB.l);
-            inputEl.value = rgbToHex(rgb.r, rgb.g, rgb.b);
-          }
-        });
-      }
-
-      // Event Listeners setup
-      function setup() {
-        btnAPlus.addEventListener('click', () => changeScore('A', 1));
-        btnAMinus.addEventListener('click', () => changeScore('A', -1));
-        btnBPlus.addEventListener('click', () => changeScore('B', 1));
-        btnBMinus.addEventListener('click', () => changeScore('B', -1));
-
-        undoBtn.addEventListener('click', undoScore);
-        resetBtn.addEventListener('click', resetScore);
-        switchServeBtn.addEventListener('click', switchServe);
-        toggleLayoutBtn.addEventListener('click', () => {
-          toggleLayout();
-          closePickers();
-        });
-
-        teamANameInput.addEventListener('input', saveNames);
-        teamBNameInput.addEventListener('input', saveNames);
-
-        // Color picker toggles
-        colorBtnA.addEventListener('click', e => {
-          e.stopPropagation();
-          togglePicker('A');
-        });
-        colorBtnB.addEventListener('click', e => {
-          e.stopPropagation();
-          togglePicker('B');
-        });
-
-        // Close buttons on pickers
-        pickerCloseA.addEventListener('click', e => {
-          e.stopPropagation();
-          closePickers();
-        });
-        pickerCloseB.addEventListener('click', e => {
-          e.stopPropagation();
-          closePickers();
-        });
-
-        // Click outside closes pickers
-        document.addEventListener('click', () => closePickers());
-
-        // Setup hue sliders
-        setupHueSlider(hueSliderA, colorA, 'A');
-        setupHueSlider(hueSliderB, colorB, 'B');
-
-        // Setup SL pickers
-        setupSlPicker(slPickerA, slCursorA, colorA, 'A');
-        setupSlPicker(slPickerB, slCursorB, colorB, 'B');
-
-        // Setup hex inputs
-        setupHexInput(hexInputA, 'A');
-        setupHexInput(hexInputB, 'B');
-      }
-
-      // Initialize
-      loadSettings();
-      setup();
-
-    })();
-  </script>
 </body>
 </html>
