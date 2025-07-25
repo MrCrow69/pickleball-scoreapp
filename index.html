@@ -551,6 +551,10 @@
       </button>
       <button id="btnReset" aria-label="Reset scores and settings">Reset</button>
       <button id="btnQR" aria-label="Generate QR Code of current score">QR Code</button>
+      <button id="save-match-btn">Save Match & Generate QR Code</button>
+      <div id="save-result" style="margin-top: 1rem;"></div>
+      <div id="saved-qr" style="margin-top: 1rem;"></div>
+
     </div>
     <div class="btn-group" id="timerWrapper">
       <button id="timerToggleBtn" aria-expanded="false" aria-label="Timer controls">⏰</button>
@@ -1072,6 +1076,55 @@ document.getElementById('qr-btn').addEventListener('click', () => {
   });
   document.getElementById('qr-popup').style.display = 'block';
 });
+async function saveCurrentMatch() {
+  const teamA = document.querySelector('#player1Name')?.value || 'Player 1';
+  const teamB = document.querySelector('#player2Name')?.value || 'Player 2';
+  const scoreA = document.querySelector('#score1')?.innerText || '0';
+  const scoreB = document.querySelector('#score2')?.innerText || '0';
+  const durationSeconds = window.timerSeconds || 0;
+
+  // Generate UUID client-side as fallback
+  const matchId = (typeof crypto !== 'undefined' && crypto.randomUUID) 
+    ? crypto.randomUUID() 
+    : Math.random().toString(36).slice(2, 10) + '-' + Date.now();
+
+  const { data, error } = await supabase
+    .from('matches')
+    .insert([{
+      id: matchId,
+      team_a: teamA,
+      team_b: teamB,
+      score_a: parseInt(scoreA),
+      score_b: parseInt(scoreB),
+      duration_seconds: durationSeconds
+    }]);
+
+  const saveResultEl = document.getElementById('save-result');
+  const qrDiv = document.getElementById('saved-qr');
+  qrDiv.innerHTML = '';
+
+  if (error) {
+    saveResultEl.style.color = 'red';
+    saveResultEl.textContent = 'Error saving match: ' + error.message;
+    return;
+  }
+
+  saveResultEl.style.color = 'green';
+  saveResultEl.textContent = 'Match saved! Scan the QR code or use the link below:';
+
+  const matchUrl = `${window.location.origin}/match.html?id=${matchId}`;
+
+  new QRCode(qrDiv, {
+    text: matchUrl,
+    width: 200,
+    height: 200,
+  });
+
+  qrDiv.insertAdjacentHTML('beforeend', `<p><a href="${matchUrl}" target="_blank" rel="noopener noreferrer">${matchUrl}</a></p>`);
+}
+
+document.getElementById('save-match-btn').addEventListener('click', saveCurrentMatch);
+
 
   </script>
 </body>
